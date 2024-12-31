@@ -352,7 +352,7 @@ namespace MarvelData {
             Unk0x01 = 0x00000001,
             Unk0x02 = 0x00000002,
             Unk0x04 = 0x00000004,
-            Unk0x08 = 0x00000008,
+            EffectPersistOnContact = 0x00000008,
             Unk0x10 = 0x00000010,
             Unk0x20 = 0x00000020,
             SpawnOnGround = 0x00000040,
