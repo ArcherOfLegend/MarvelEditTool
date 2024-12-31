@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
+using static System.Windows.Forms.AxHost;
 
 namespace MarvelData
 {
@@ -64,6 +68,7 @@ namespace MarvelData
 
                     line = line.Trim();
                     long key = 0;
+                    // value A_XXXX
                     if (line.IndexOf(',') >= 0)
                     {
                         try
@@ -82,7 +87,7 @@ namespace MarvelData
                         return "PARSE ERROR 1ST AROUND LINE " + i + ": NO 1ST COMMA DETECTED: " + line;
                     }
                     line = line.Substring(line.IndexOf(',') + 1);
-
+                    // value X_AAXX
                     if (line.IndexOf(',') >= 0)
                     {
                         try
@@ -100,7 +105,26 @@ namespace MarvelData
                         AELogger.Log("PARSE ERROR 2ND AROUND LINE " + i + ": NO 2ND COMMA DETECTED: " + line);
                         return "PARSE ERROR 2ND AROUND LINE " + i + ": NO 2ND COMMA DETECTED: " + line;
                     }
-
+                    // value X_XXAA
+                    line = line.Substring(line.IndexOf(',') + 1);
+                    if (line.IndexOf(',') >= 0)
+                    {
+                        try
+                        {
+                            key += long.Parse(line.Substring(0, line.IndexOf(',')), System.Globalization.NumberStyles.HexNumber) << 8;
+                        }
+                        catch (Exception e)
+                        {
+                            AELogger.Log("PARSE ERROR 3RD AROUND LINE " + i + ": " + line + "\nDETAILS: " + e.Message);
+                            return "PARSE ERROR 3RD AROUND LINE " + i + ": " + line + "\nDETAILS: " + e.Message;
+                        }
+                    }
+                    else
+                    {
+                        AELogger.Log("PARSE ERROR 3RD AROUND LINE " + i + ": NO 3RD COMMA DETECTED: " + line);
+                        return "PARSE ERROR 3RD AROUND LINE " + i + ": NO 3RD COMMA DETECTED: " + line;
+                    }
+                    // output string
                     line = line.Substring(line.IndexOf(',') + 1);
                     line = line.TrimStart();
                     if (cmdNames.ContainsKey(key))
@@ -272,7 +296,7 @@ namespace MarvelData
             {
                 if (cmdNames != null)
                 {
-                    long header = ((long)subsubEntries[i][0] << 32) + (long)subsubEntries[i][4];
+                    long header = ((long)subsubEntries[i][0] << 32) + (long)subsubEntries[i][4] + ((long)subsubEntries[i][5] << 8);
                     if (cmdNames.ContainsKey(header))
                     {
                         return UpdateCmdNameByContent(cmdNames[header], subsubEntries[i]);
@@ -311,6 +335,33 @@ namespace MarvelData
                     return "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
                 }
             }
+            
+            
+            /*else if (cmdName.Contains("1_3C") || cmdName.Contains("1_3D"))
+            {
+                string commandName = "";
+                if (cmdName.Contains("1_3C start state/start invincibility")) {
+                    commandName = "1_3C start state";
+                }
+                else if (cmdName.Contains("1_3D end state/end invincibility")) {
+                    commandName = "1_3C end state";
+                }
+                byte[] last4Bytes = new byte[4];
+                Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
+                string flagNames = Enum.GetNames(typeof(AnmFlagsA)).ToString();
+                //flagType = Tools.MVCHexToDecimal(BitConverter.ToString(last4Bytes).Replace("-", ""));
+                int flagType = 0;
+                if (flagType >= 0)
+                {
+                    return commandName + " (" + flagNames + ")";
+                }
+                else
+                {
+                    return commandName + " (" + flagNames + ")";
+                }
+            }*/
+            
+            
             else
             {
 

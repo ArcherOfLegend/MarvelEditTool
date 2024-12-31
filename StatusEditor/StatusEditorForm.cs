@@ -346,6 +346,12 @@ namespace StatusEditor
                     tablefile = newTable;
                     ResetLayout(openFile, count);
                     animBox_SelectedIndexChanged(null, null);
+                    if (newTable.fileExtension.Contains("CPI"))
+                    {
+                        MessageBox.Show("Profile editing is extremely unstable and in development."
+                        + Environment.NewLine + "You will be prevented from saving while editing this file."
+                        , "Profile Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                 }
                 else
                 {
@@ -391,8 +397,8 @@ namespace StatusEditor
             }
             else
                 openFile.Filter = "Supported Data (" +
-                    "*.ccm;*.28DD8317;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.csp;*.52A8DBF6;*.cli;*.5B486CCE;*.sht;*.10BE43D4;*.cpi;*.1DF3E03E)|" +
-                    "*.ccm;*.28DD8317;*.csp;*.52A8DBF6;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.cli;*.5B486CCE;*.sht;*.10BE43D4;*.cpi;*.1DF3E03E|" +
+                    "*.ccm;*.28DD8317;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.csp;*.52A8DBF6;*.cli;*.5B486CCE;*.sht;*.10BE43D4;|" +
+                    "*.ccm;*.28DD8317;*.csp;*.52A8DBF6;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.cli;*.5B486CCE;*.sht;*.10BE43D4;|" +
                     "AtkInfo Files (*.ati;*.227A8048)|*.ati;*.227A8048|BaseAct Files (*.cba;*.3C6EA504)|*.cba;*.3C6EA504|" +
                     "Cmdcombo Files (*.ccm;*.28DD8317)|*.ccm;*.28DD8317|Cmdspatk Files (*.csp;*.52A8DBF6)|*.csp;*.52A8DBF6|" +
                     "Status Files (*.chs;*.3C41466B)|*.chs;*.3C41466B|Collision Files (*.cli;*.5B486CCE)|.cli;*.5B486CCE|" +
@@ -455,6 +461,13 @@ namespace StatusEditor
 
         private void SaveButton_Click(object sender, EventArgs ev)
         {
+            if (tablefile.fileExtension.Contains("CPI"))
+            {
+                MessageBox.Show("Profile editing is extremely unstable and in development." + Environment.NewLine
+                + "You are locked out from saving while editing this file."
+                , "Profile Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (bError || tablefile.fileExtension.Contains("SHT") ? !IsNameValid() : false)
             {
                 return;
@@ -1190,14 +1203,18 @@ namespace StatusEditor
                 structView.Columns[0].DefaultCellStyle.ForeColor = Color.Black;
                 structView.Columns[1].DefaultCellStyle.ForeColor = Color.Black;
 
-                correctIndexToolStripMenuItem.Enabled =  !structViewType.Name.Contains("ATKInfo"); // TODO: create a propper get type method
-                entryExportButton.Enabled = true;
-                entryDeleteButton.Enabled = !structViewType.Name.Contains("ATKInfo") && !structViewType.Name.Contains("BaseAct"); // TODO: create a propper get type method
-                entryDuplicateStripMenuItem.Enabled = entryInsertButton.Visible;
-                entryUpButton.Enabled = (animBox.SelectedIndex > 0) && !structViewType.Name.Contains("ATKInfo"); // TODO: create a propper get type method
-                entryDownButton.Enabled = (animBox.SelectedIndex + 1  < tablefile.TotalEntries) && !structViewType.Name.Contains("ATKInfo"); // TODO: create a propper get type method
+                correctIndexToolStripMenuItem.Enabled = !structViewType.Name.Contains("ATKInfo") && !tablefile.fileExtension.Contains("CPI") && !tablefile.fileExtension.Contains("CHS"); // TODO: create a propper get type method
+                entryExportButton.Enabled = !tablefile.fileExtension.Contains("CPI");
+                entryImportButton.Enabled = !tablefile.fileExtension.Contains("CPI");
+                entryDeleteButton.Enabled = !structViewType.Name.Contains("ATKInfo") && !structViewType.Name.Contains("BaseAct") && !tablefile.fileExtension.Contains("CPI"); // TODO: create a propper get type method
+                entryDuplicateStripMenuItem.Enabled = entryInsertButton.Visible && !tablefile.fileExtension.Contains("CPI") && !tablefile.fileExtension.Contains("CHS");
+                entryInsertButton.Enabled = !tablefile.fileExtension.Contains("CPI") && !tablefile.fileExtension.Contains("CHS");
+                entryInsertButton.Visible = !tablefile.fileExtension.Contains("SHT");
+                entryUpButton.Enabled = (animBox.SelectedIndex > 0) && !tablefile.fileExtension.Contains("CPI")/* && !structViewType.Name.Contains("ATKInfo")*/; // TODO: create a propper get type method
+                entryDownButton.Enabled = (animBox.SelectedIndex + 1  < tablefile.TotalEntries) &&!tablefile.fileExtension.Contains("CPI") /*&& !structViewType.Name.Contains("ATKInfo")*/; // TODO: create a propper get type method
                 subChunkAddButton.Enabled = tablefile.table[animBox.SelectedIndex] is MultiStructEntry;
                 subChunkDeleteButton.Enabled = tablefile.table[animBox.SelectedIndex] is MultiStructEntry;
+
                 shotNameTextBox.Text = tablefile.table[animBox.SelectedIndex].name;
                 shotNameTextBox.Enabled = true;
                 SetTextConcurrent(tablefile.table[animBox.SelectedIndex].GetData());
@@ -1258,7 +1275,7 @@ namespace StatusEditor
                 entryExportButton.Enabled = false;
                 entryDeleteButton.Enabled = false;
                 entryDuplicateStripMenuItem.Enabled = false;
-                entryUpButton.Enabled = false;
+                entryUpButton.Enabled = true;
                 shotNameTextBox.Text = "";
                 shotNameTextBox.Enabled = false;
                 dataTextBox.Text = "";
@@ -1377,8 +1394,8 @@ namespace StatusEditor
                 AddTags(typeof(StatusFlags), true);
             else if (tag.Contains("OppHitAnim"))
                 AddTags(typeof(OppHitAnim), false);
-            else if (tag.Contains("OnHitEffectOnEnemy") || tag.Contains("OnBlockEffectOnEnemy"))
-                AddTags(typeof(HitEffectOnEnemy), false);
+            else if (tag.Contains("OnHitEffect") || tag.Contains("OnBlockEffectOnEnemy"))
+                AddTags(typeof(HitEffect), false);
             else if (tag.Contains("state"))
                 AddTags(typeof(BaseActState), false);
             else if (tag.Contains("positionState"))

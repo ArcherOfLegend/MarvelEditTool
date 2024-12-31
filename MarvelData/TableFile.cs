@@ -611,7 +611,7 @@ namespace MarvelData
 
 
                 // sets entry type and structure size of tableFile
-                private static void AutoIdentifyFileType(ref Type entryType, ref int structsize, TableFile tablefile)
+        private static void AutoIdentifyFileType(ref Type entryType, ref int structsize, TableFile tablefile)
         {
             string typeString = ASCIIEncoding.Default.GetString(tablefile.header, 0, 3);
             for (int i = 0; i < structExtensions.Length; i++)

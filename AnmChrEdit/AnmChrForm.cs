@@ -266,11 +266,11 @@ namespace AnmChrEdit
                             return;
                         default:
                             Text = "AnmChrEditor, build " + GetCompileDate();
-                            filenameLabel.Text = String.Empty;
+                            /*filenameLabel.Text = String.Empty;
                             dataTextBox.Clear();
                             filePath = String.Empty;
                             SetDataTexBoxFormat(0);
-                            AELogger.WriteLog();
+                            AELogger.WriteLog();*/
                             break;
                     }
                 }
@@ -278,8 +278,14 @@ namespace AnmChrEdit
                 // The Filter property requires a search string after the pipe ( | )
                 openFile.Filter = "AnmChr Files (*.cac;*.5A7E5D8A; *.anm)|*.cac;*.5A7E5D8A;*.anm|All files (*.*)|*.*";
                 openFile.ShowDialog();
+                
                 if (openFile.FileNames.Length > 0)
                 {
+                    filenameLabel.Text = String.Empty;
+                    dataTextBox.Clear();
+                    filePath = String.Empty;
+                    SetDataTexBoxFormat(0);
+                    AELogger.WriteLog();
                     //TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], true, typeof(StructEntry<ATKInfoChunk>), 848, true);
                     TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], false, typeof(AnmChrEntry), -1, true);
                     int count = newTable.table.Count;
