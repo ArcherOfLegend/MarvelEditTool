@@ -320,7 +320,7 @@ namespace MarvelData
 
         private String UpdateCmdNameByContent(string cmdName, byte[] subsubEntry) 
         {
-            if (cmdName.Contains("1_DB add/subtract meter"))
+            if (cmdName.Contains("1_DB Add/Subtract Meter"))
             {
                 byte[] last4Bytes = new byte[4];
                 int meter = 0;
