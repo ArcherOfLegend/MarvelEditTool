@@ -344,7 +344,223 @@ namespace MarvelData {
          public int unk2F8;
          public int unk2FC;
         }
-        
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotChunkM
+    {
+        public int unk64;
+        public int unk68;
+        public int unk6C;
+        public int projectileSpawn;
+        public ShtFlagsA ShtFlagsA;
+        public ShtFlagsB ShtFlagsB;
+        public ShtFlagsC ShtFlagsC;
+        public int unk80;
+        public float projectileDuration;
+        public float unk88;
+        public int SpawnDelay;
+        public float XSpeed;
+        public float XAccel;
+        public float XMaxSpeedAccelUnk;
+        public float beamDuration;
+        public float YSpeed;
+        public float YAccel;
+        public float YMaxSpeedAccelUnk;
+        public float beamMaxLength;
+        public float trackingStrength;
+        public float trackingUnk;
+        public float trackingRotation;
+        public float trackingStartFrame;
+        public int unkC0;
+        public int unkC4;
+        public float trackingEndFrame;
+        public int unkCC;
+        public float despawnProjectileFrame;
+        public int returnBone;
+        public int unkD8;
+        public int SpawnOnBone;
+        public int AttachToBone;
+        public int unkE4;
+        public float ZSpawnPosition;
+        public float YSpawnPosition;
+        public float XSpawnPosition;
+        public int unkF4;
+        public float ZSpawnRandomDisplacement;
+        public float YSpawnRandomDisplacement;
+        public float XSpawnRandomDisplacement;
+        public float SpawnPositionAngle;
+        public float ZRotation;
+        public float YRotation;
+        public float XRotation;
+        public float MaximumRotationUnk;
+        public float ZRotationRandomDisplacement;
+        public float YRotationRandomDisplacement;
+        public float XRotationRandomDisplacement;
+        public int unk124;
+        public float unk128;
+        public float unk12C;
+        public TrapTransition trapTransition; //bitwise flags
+        public TrapTransition trapTransition2;
+        public TrapTransition trapTransition3;
+        //public long projectile2Reference;
+        //public long projectile3Reference;
+        //public long projectile4Reference;
+        public int projectile2Reference1;
+        public int projectile2Reference2;
+        public int projectile2Reference3;
+        public int projectile2Reference4;
+        public int projectile2Reference5;
+        public int projectile2Reference6;
+        public int projectile2Reference7;
+        public int projectile2Reference8;
+        public int projectile2Reference9;
+        public int projectile2Reference10;
+        public int projectile2Reference11;
+        public int projectile2Reference12;
+        public int projectile2Reference13;
+        public int projectile2Reference14;
+        public int projectile2Reference15;
+        public int projectile2Reference16;
+        public int projectile3Reference1;
+        public int projectile3Reference2;
+        public int projectile3Reference3;
+        public int projectile3Reference4;
+        public int projectile3Reference5;
+        public int projectile3Reference6;
+        public int projectile3Reference7;
+        public int projectile3Reference8;
+        public int projectile3Reference9;
+        public int projectile3Reference10;
+        public int projectile3Reference11;
+        public int projectile3Reference12;
+        public int projectile3Reference13;
+        public int projectile3Reference14;
+        public int projectile3Reference15;
+        public int projectile3Reference16;
+        public int projectile4Reference1;
+        public int projectile4Reference2;
+        public int projectile4Reference3;
+        public int projectile4Reference4;
+        public int projectile4Reference5;
+        public int projectile4Reference6;
+        public int projectile4Reference7;
+        public int projectile4Reference8;
+        public int projectile4Reference9;
+        public int projectile4Reference10;
+        public int projectile4Reference11;
+        public int projectile4Reference12;
+        public int projectile4Reference13;
+        public int projectile4Reference14;
+        public int projectile4Reference15;
+        public int projectile4Reference16;
+        public int unk1FC;
+        public int unk200;
+        public int unk204;
+        public int unk208;
+        public int unk20C;
+        public int unk210;
+        public int projectileAnmString1;
+        public int projectileAnmString2;
+        public int projectileAnmString3;
+        public int projectileAnmString4;
+        public int projectileAnmString5;
+        public int projectileAnmString6;
+        public int projectileAnmString7;
+        public int projectileAnmString8;
+        public int projectileAnmString9;
+        public int projectileAnmString10;
+        public int projectileAnmString11;
+        public int projectileAnmString12;
+        public int projectileAnmString13;
+        public int projectileAnmString14;
+        public int projectileAnmString15;
+        public int projectileAnmString16;
+        public int SoundType1;
+        public int SoundID1A;
+        public int SoundID1B;
+        public int unk260;
+        public int SoundType2;
+        public int SoundID2A;
+        public int SoundID2B;
+        public int unk270;
+        public int SoundType3;
+        public int SoundID3A;
+        public int SoundID3B;
+        public int soundBankIndexUnk;
+        public int SoundType4;
+        public int SoundID4A;
+        public int SoundID4;
+        public int unk290;
+        public int unk294;
+        public float unk298;
+        public float unk29C;
+        public float unk2A0;
+        public int unk2A4;
+        public float unk2A8;
+        public float unk2AC;
+        public float unk2B0;
+        public int unk2B4;
+        public int EffectSubEntryA;
+        public int EffectSubEntryB;
+        public int unk2C0;
+        public int unk2C4;
+        public float HardCodedProperties1;
+        public float HardCodedProperties2;
+        public float HardCodedProperties3;
+        public float unk2D4;
+        public int unk2D8;
+        public int unk2DC;
+        public int friendlyFire;
+        public int unk2E4;
+        public int unk2E8;
+        public int unk2EC;
+        public int canBeNullified;
+        public int unk2F4;
+        public int unk2F8;
+        public int unk2FC;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotHeaderChunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public int unk358;
+        public int unk35C;
+        public int unk360;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotCLI
+    {
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public int unk370;
+        public float unk374;
+        public float unk378;
+        public int unk37C;
+        public int unk380;
+        public int unk384;
+        public int unk388;
+        public float hitboxY;
+        public float hitboxX;
+        public float unk394;
+        public int unk398;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public int unk3A8;
+        public float BeamLengthLimitUnk;
+        public float unk3B0;
+        public float unk3B4;
+        public float hitboxSize;
+        public int unk3BC;
+        public int unk3C0;
+        public int unk3C4;
+    }
+
     [Flags]
         public enum ShtFlagsA : uint
         {
@@ -461,6 +677,16 @@ namespace MarvelData {
             Unk0x80000000 = 0x80000000
         }
 
+    public enum Durability : int
+    {
+        Lowest = 1,
+        Low = 2,
+        Medium = 3,
+        LowHyper = 40001,
+        Hyper = 40002,
+        UltraHyper = 40003
+    }
+
     [StructLayout(LayoutKind.Sequential)]
         public struct ShotXSChunk
         {
@@ -468,7 +694,7 @@ namespace MarvelData {
         public float NumberOfHitsUnk;
         public float durability;
         public float durabilityUnk;
-        public int durabilityType;
+        public Durability durabilityType;
         public int unk354;
         public int unk358;
         public int unk35C;
@@ -482,7 +708,7 @@ namespace MarvelData {
             public float NumberOfHitsUnk;
             public float durability;
             public float durabilityUnk;
-            public int durabilityType;
+            public Durability durabilityType;
             public int unk354;
             public float unk358;
             public int unk35C;
@@ -521,7 +747,7 @@ namespace MarvelData {
             public float NumberOfHitsUnk;
             public float durability;
             public float durabilityUnk;
-            public int durabilityType;
+            public Durability durabilityType;
             public int unk354;
             public float unk358;
             public int unk35C;
@@ -746,7 +972,7 @@ namespace MarvelData {
             public float unk28C;
             public float unk290;
             public float unk294;
-            public int unk298;
+            public float unk298;
             public float unk29C;
             public float unk2A0;
             public float unk2A4;
@@ -777,7 +1003,7 @@ namespace MarvelData {
             public int unk308;
             public int unk30C;
             public int unk310;
-            public int unk314;
+            public float unk314;
             public int unk318;
             public int unk31C;
             public int unk320;
@@ -789,7 +1015,7 @@ namespace MarvelData {
             public float unk338;
             public float unk33C;
             public float unk340;
-            public int unk344;
+            public float unk344;
             public int unk348;
             public int unk34C;
             public int unk350;
@@ -868,6 +1094,23 @@ namespace MarvelData {
             Unk0x40000000 = 0x40000000,
             Unk0x80000000 = 0x80000000
     }
+    public enum ScreenShake : uint 
+    { 
+        None = 4294967295,
+        Strength0 = 0,
+        Strength1 = 1,
+        Strength2 = 2,
+        Strength3 = 3,
+        Strength4 = 4,
+        Strength5 = 5,
+        Strength6 = 6,
+        Strength7 = 7,
+        Strength8 = 8,
+        Strength9 = 9,
+        Strength10 = 10,
+        Strength11 = 11,
+        Strength12 = 12
+    }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ATKInfoChunk
@@ -942,29 +1185,29 @@ namespace MarvelData {
             public int AmmyThrowModifier;
             public int AmmyAnmchrEntryOnHit;
             public int AmmyAnmtdownEntryOnHit;
-            public int HitEffect;
+            public HitEffect HitEffect;
             public int unk11C;
             public HitEffect SecondaryHitEffect;
             public HitEffect NegatedChipDamageEffect;
-            public int BlockEffect;
-            public int SecondaryBlockEffect;
+            public HitEffect BlockEffect;
+            public HitEffect SecondaryBlockEffect;
             public int unk130;
-            public int GroundImpactEffect;
+            public HitEffect GroundImpactEffect;
             public int unk138;
-            public int OwnerAttackNullifiedEffect;
+            public HitEffect OwnerAttackNullifiedEffect;
             public int unk140;
             public int unk144;
             public int unk148;
-            public int ScreenShakeOnHit;
+            public ScreenShake ScreenShakeOnHit;
             public HitSFXGroup hitSFXGroup;
             public HitSFXSubGroup hitSFXSubGroup;
             public HitSFXEntry hitSFXEntry;
             public PlayWhiffSFXOnNormals playWhiffSFXOnNormals;
             public int launcherUnk;
-            public float unk164;
-            public float unk168;
-            public float unk16C;
-            public int unk170;
+            public float EffectRotationA;
+            public float EffectRotationB;
+            public float EffectRotationC;
+            public int EffectRandomRotationDisplacement;
             public int unk174;
             public int IDReference2;
             public int FramesToIDReference2;
@@ -1101,7 +1344,7 @@ namespace MarvelData {
             YellowFire = 11,
             YellowElectricity = 12,
             IceAndScreenShake = 13,
-            HiddienMissileExplosion = 14,
+            HiddenMissileExplosion = 14,
             GroundImpactFlyingShards = 15,
             GuardBlue02 = 17,
             GuardRed03 = 18,
@@ -1144,6 +1387,7 @@ namespace MarvelData {
             TACDown = 61,
             AlphaCounter03 = 64,
             FilmStrip = 1005,
+            Unique = 1006
         }
 
         public enum GuardType : int
@@ -1876,8 +2120,8 @@ namespace MarvelData {
         Bone187 = 187,
         Bone188 = 188,
         Bone189 = 189,
-        UsuallyWeapon = 190,
-        UsuallyOffHand = 191,
+        LeftWeapon = 190,
+        RightWeapon = 191,
         Bone192 = 192,
         Bone193 = 193,
         Bone194 = 194,
@@ -1906,16 +2150,16 @@ namespace MarvelData {
         Bone217 = 217,
         Bone218 = 218,
         Bone219 = 219,
-        Bone220 = 190,
-        Bone221 = 191,
-        Bone222 = 192,
-        Bone223 = 193,
-        Bone224 = 194,
-        Bone225 = 195,
-        Bone226 = 196,
-        Bone227 = 197,
-        Bone228 = 198,
-        Bone229 = 199,
+        Bone220 = 220,
+        Bone221 = 221,
+        Bone222 = 222,
+        Bone223 = 223,
+        Bone224 = 224,
+        Bone225 = 225,
+        Bone226 = 226,
+        Bone227 = 227,
+        Bone228 = 228,
+        Bone229 = 229,
         Bone230 = 230,
         Bone231 = 231,
         Bone232 = 232,
@@ -1959,7 +2203,7 @@ namespace MarvelData {
         Unk0x0100 = 0x00000100,
         Unk0x0200 = 0x00000200,
         Unk0x0400 = 0x00000400,
-        Unk0x0 = 0x00000800,
+        Unk0x0800 = 0x00000800,
         Unk0x1000 = 0x00001000,
         Unk0x2000 = 0x00002000,
         Unk0x4000 = 0x00004000,

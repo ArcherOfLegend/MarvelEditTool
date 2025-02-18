@@ -400,26 +400,36 @@ namespace MarvelData
                     break;
             }
 
+            string Flags = "";
+            if (((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags.HasFlag(AtkFlagsA.FlyingScreen))
+            {
+                Flags += "Spike ";
+            }
+            if (((StructEntry<MarvelData.ATKInfoChunk>)this).data.OppHitAnim.Equals(OppHitAnim.launch))
+            {
+                Flags += "Launcher ";
+            }
             if ((index >= 40 && index <= 49) && HasAtkFlags())
             {
-                return "Command Move " + (index - 39);
+                return Flags + "Command Move " + (index - 39);
             }
 
             if ((index >= 50 && index <= 79) && HasAtkFlags())
             {
-                return "Special Move " + (index - 49);
+                return Flags + "Special Move " + (index - 49);
             }
 
             if ((index >= 80 && index <= 99) && HasAtkFlags())
             {
-                return "Hyper Move " + (index - 79);
+                return Flags + "Hyper Move " + (index - 79);
             }
 
             if (index >= 100 && index <=102 && HasAtkFlags())
             {
-                return "Assist " + (index - 99);
+                return Flags + "Assist " + (index - 99);
             }
-            if(((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags3.HasFlag(AtkFlagsC.TechGrabs)){
+
+            if (((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags3.HasFlag(AtkFlagsC.TechGrabs)){
                 return "Throw Entry";
             }
             if ((((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags3.HasFlag(AtkFlagsC.ThrowGroundedOpp) || ((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags3.HasFlag(AtkFlagsC.ThrowAirborneOpp)) && !((StructEntry<MarvelData.ATKInfoChunk>)this).data.atkflags3.HasFlag(AtkFlagsC.TechGrabs))

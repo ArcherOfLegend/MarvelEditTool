@@ -1394,7 +1394,7 @@ namespace StatusEditor
                 AddTags(typeof(StatusFlags), true);
             else if (tag.Contains("OppHitAnim"))
                 AddTags(typeof(OppHitAnim), false);
-            else if (tag.Contains("OnHitEffect") || tag.Contains("OnBlockEffectOnEnemy"))
+            else if (tag.Contains("SecondaryHitEffect") || tag.Contains("NegatedChipDamageEffect") || tag.Contains("HitEffect") || tag.Contains("BlockEffect")|| tag.Contains("SecondaryBlockEffect")|| tag.Contains("OwnerAttackNullifiedEffect")|| tag.Contains("GroundImpactEffect"))
                 AddTags(typeof(HitEffect), false);
             else if (tag.Contains("state"))
                 AddTags(typeof(BaseActState), false);
@@ -1434,6 +1434,14 @@ namespace StatusEditor
                 AddTags(typeof(ProfileFlags), true);
             else if (tag.Contains("IdentityFlags2"))
                 AddTags(typeof(ProfileFlagsB), true);
+            else if (tag.Contains("durabilityType"))
+                AddTags(typeof(Durability), false);
+            else if (tag.Contains("playWhiffSFXOnNormals"))
+                AddTags(typeof(PlayWhiffSFXOnNormals), false);
+            else if (tag.Contains("specialProperties"))
+                AddTags(typeof(EnumUnk), true);
+            else if (tag.Contains("ScreenShakeOnHit"))
+                AddTags(typeof(ScreenShake), true);
             else
             {
                 tagsDataGridView.DataSource = null;
