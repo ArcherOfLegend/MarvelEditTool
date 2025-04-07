@@ -5,6 +5,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Xml.Linq;
+using System.Windows.Media.TextFormatting;
 
 namespace MarvelData {
 
@@ -173,7 +174,7 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotChunk
     {
-                    public int unk64;
+     public int unk64;
      public int unk68;
      public int unk6C;
      public int projectileSpawn;
@@ -676,7 +677,15 @@ namespace MarvelData {
             Unk0x40000000 = 0x40000000,
             Unk0x80000000 = 0x80000000
         }
-
+    public enum ShotCliType : int
+    { 
+        Attack = 0,
+        Unk01 = 1,
+        Player = 2,
+        Stage = 3,
+        Unk04 = 4,
+        SecondaryATI = 5
+    }
     public enum Durability : int
     {
         Lowest = 1,
@@ -712,29 +721,29 @@ namespace MarvelData {
             public int unk354;
             public float unk358;
             public int unk35C;
-            public int unk360;
+            public int unk360; //Start of Entry 1
             public int unk364;
             public int unk368;
             public int unk36C;
-            public int unk370;
-            public float unk374;
-            public float unk378;
-            public int unk37C;
+            public ShotCliType CollisionType;   //370
+            public int CollisionRules;          //374
+            public EnumUnk CLIFlagA;
+            public EnumUnk CLIFlagB;
             public int unk380;
             public int unk384;
-            public int unk388;
-            public float hitboxY;
-            public float hitboxX;
+            public float HitboxZ;
+            public float HitboxY;
+            public float HitboxX;
             public float unk394;
-            public int unk398;
+            public BoneReferenceId BoneID;
             public float unk39C;
             public float unk3A0;
             public float unk3A4;
-            public int unk3A8;
-            public float BeamLengthLimitUnk;
-            public float unk3B0;
+            public float UnkZHitboxStretch;
+            public float UnkYHitboxStretch;
+            public float UnkXHitboxStretch;
             public float unk3B4;
-            public float hitboxSize;
+            public float HitboxSize;
             public int unk3BC;
             public int unk3C0;
             public int unk3C4;
@@ -743,66 +752,152 @@ namespace MarvelData {
         [StructLayout(LayoutKind.Sequential)]
         public struct ShotLChunk
         {
-            public float numberOfHits;
-            public float NumberOfHitsUnk;
-            public float durability;
-            public float durabilityUnk;
-            public Durability durabilityType;
-            public int unk354;
-            public float unk358;
-            public int unk35C;
-            public int unk360;
-            public int unk364;
-            public int unk368;
-            public int unk36C;
-            public int unk370;
-            public int unk374;
-            public int unk378;
-            public int unk37C;
-            public int unk380;
-            public int unk384;
-            public int unk388;
-            public float altHitboxY;
-            public float altHitboxX;
-            public int unk394;
-            public int unk398;
-            public int unk39C;
-            public int unk3A0;
-            public int unk3A4;
-            public int unk3A8;
-            public float unk3AC;
-            public float unk3B0;
-            public int unk3B4;
-            public float altHitboxSize;
-            public int unk3BC;
-            public int unk3C0;
-            public int unk3C4;
-            public int unk3C8;
-            public int unk3CC;
-            public int unk3D0;
-            public int unk3D4;
-            public int unk3D8;
-            public int unk3DC;
-            public int unk3E0;
-            public int unk3E4;
-            public int unk3E8;
-            public float hitboxY;
-            public float hitboxX;
-            public int unk3F4;
-            public int unk3F8;
-            public int unk3FC;
-            public int unk400;
-            public int unk404;
-            public int unk408;
-            public float BeamLengthLimitUnk;
-            public float unk410;
-            public float unk414;
-            public float hitboxSize;
-            public int unk41C;
-            public int unk420;
-            public int unk424;
-        }
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;   
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+        public int unk420;
+        public int unk424;
+    }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotXLChunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+        public int unk520;
+        public int unk524;
+    }
 
     [StructLayout(LayoutKind.Sequential)]
         public struct StatusChunk

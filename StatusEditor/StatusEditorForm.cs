@@ -1442,6 +1442,12 @@ namespace StatusEditor
                 AddTags(typeof(EnumUnk), true);
             else if (tag.Contains("ScreenShakeOnHit"))
                 AddTags(typeof(ScreenShake), true);
+            else if (tag.Contains("CollisionType"))
+                AddTags(typeof(ShotCliType), false);
+            else if (tag.Contains("BoneID"))
+                AddTags(typeof(BoneReferenceId), true);
+            else if (tag.Contains("CLIFlag"))
+                AddTags(typeof(EnumUnk), true);
             else
             {
                 tagsDataGridView.DataSource = null;

@@ -33,6 +33,7 @@ namespace MarvelData
         private byte[] shotName2Bytes;
         private String shotName2String;
         private byte[] headerC;
+        private byte[] headerD;
 
         public uint TotalEntries
         { get
@@ -47,8 +48,9 @@ namespace MarvelData
 
         public static Type[] structTypes = { typeof(StructEntry<StatusChunk>), typeof(StructEntry<ATKInfoChunk>), typeof(StructEntry<BaseActChunk>),
             typeof(CmdSpAtkEntry), typeof(CmdComboEntry), typeof(AnmChrEntry), typeof(CollisionEntry), typeof(StructEntry<ShotChunk>),
-            typeof(StructEntry<ShotSChunk>), typeof(StructEntry<ShotLChunk>), typeof(StructEntry<ShotXSChunk>), typeof(StructEntry<ProfileSelfChunk>), typeof(StructEntry<ProfileChunk>)};
-        public static int[] structSizes = { 0x350, 0x18C, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            typeof(StructEntry<ShotSChunk>), typeof(StructEntry<ShotLChunk>), typeof(StructEntry<ShotXSChunk>), typeof(StructEntry<ProfileSelfChunk>), 
+            typeof(StructEntry<ProfileChunk>), typeof(StructEntry<ShotXLChunk>)};
+        public static int[] structSizes = { 0x350, 0x18C, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
         public static string[] structExtensions = { "CHS", "ATI", "CBA", "CSP", "CCM", "CAC", "CLI", "SHT", "CPI" };
 
         public static TableFile LoadFile(string filename, bool bAutoIdentify = false, Type entryType = null, int structsize = -1, Boolean isAnmChrEdit = false)
@@ -274,6 +276,7 @@ namespace MarvelData
                 tablefile.fileType = entryType;
                 tablefile.defaultChunkSize = 868;
 
+
                 for (int i = 0; i < length - 32; i++)
                 {
                     while (i <= 3)
@@ -302,11 +305,7 @@ namespace MarvelData
                                 new byte[] { readShtNameByte } : Tools.AddByteToArray(tablefile.headerB, readShtNameByte);
                             //wholeString.Append(readShtNameByte.ToString("x2"));
                         }
-                        //if (i == 12)
-                        //{
-                        //    Console.WriteLine("headerB - i=" + i + " - " + wholeString + " and reader position is: " + (uint)reader.BaseStream.Position);
-                        //    wholeString.Clear();
-                        //}
+
                         if (i >= 12)
                         {
                             tablefile.shotNameBytes = (tablefile.shotNameBytes == null) ?
@@ -347,7 +346,7 @@ namespace MarvelData
                     //}
 
                     // count size of file before body
-                    int preBodyFileSize = tablefile.header.Length + tablefile.headerB.Length + tablefile.shotNameBytes.Length + tablefile.headerC.Length;
+                    int preBodyFileSize = tablefile.header.Length + tablefile.headerB.Length + tablefile.shotNameBytes.Length + tablefile.headerC.Length ;
                     TableEntry current = (TableEntry)Activator.CreateInstance(entryType);
                     byte[] readBodyBytes = new byte[1];
                     while (i >= 100 && i < 267) // 0x64
@@ -424,12 +423,27 @@ namespace MarvelData
                     // count size of file before body2
                     int postBodyFileSize = preBodyFileSize + tablefile.table[0].size + tablefile.shotName2Bytes.Length;
                     int remainingBodySize = (int)(length - postBodyFileSize);
-                    long ShtRefSize = BitConverter.ToInt32(tablefile.headerB, 4) - 768;
+                    int entryCount = (BitConverter.ToInt32(tablefile.headerB, 4) -  768) / 96 ;
+                    // simplifies the process in the future. remove when this is a multistruct
                     int S = 0;
+                    if (entryCount == 0) { S = 10; }
+                    else if (entryCount == 1) { S = 8; }
+                    else if (entryCount == 2) { S = 9; }
+                    else if (entryCount == 3) { S = 13; }
+                    else
+                    {
+                        MessageBox.Show("Unsupported SHTRef entry count, " + entryCount + " entries detected." +
+                            Environment.NewLine + "Please post this error in #bug-report in the UMVC3 Discord.",
+                        "SHTRef Crash", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                    /*long ShtRefSize = BitConverter.ToInt32(tablefile.headerB, 4) - 768;
+                    int S = 0;
+                    
                     if (ShtRefSize == 0) { S = 10; }
                     else if (ShtRefSize == 96) { S = 8; }
                     else if (ShtRefSize == 192) { S = 9; }
-                    else { S = 0; }
+                    else if (ShtRefSize == 288) { S = 13; }
+                    else { S = 0; }*/
                     byte[] readBody2Bytes = new byte[0];
                     current = (TableEntry)Activator.CreateInstance(structTypes[S]);
                     while (i >= 331 && i < length) // 0x300
