@@ -1448,6 +1448,8 @@ namespace StatusEditor
                 AddTags(typeof(BoneReferenceId), true);
             else if (tag.Contains("CLIFlag"))
                 AddTags(typeof(EnumUnk), true);
+            else if (tag.Contains("projectileID"))
+                AddTags(typeof(ProjectileID), true);
             else
             {
                 tagsDataGridView.DataSource = null;

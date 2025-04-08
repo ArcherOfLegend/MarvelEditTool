@@ -177,7 +177,7 @@ namespace MarvelData {
      public int unk64;
      public int unk68;
      public int unk6C;
-     public int projectileSpawn;
+     public ProjectileID projectileID;
      public ShtFlagsA ShtFlagsA;
      public ShtFlagsB ShtFlagsB;
      public ShtFlagsC ShtFlagsC;
@@ -650,7 +650,7 @@ namespace MarvelData {
             Unk0x08 = 0x00000008,
             Unk0x10 = 0x00000010,
             Unk0x20 = 0x00000020,
-            Unk0x40 = 0x00000040,
+            DontDespawnOffscreen = 0x00000040,
             Unk0x80 = 0x00000080,
             Unk0x0100 = 0x00000100,
             Unk0x0200 = 0x00000200,
@@ -677,6 +677,50 @@ namespace MarvelData {
             Unk0x40000000 = 0x40000000,
             Unk0x80000000 = 0x80000000
         }
+    public enum ProjectileID : uint
+    {
+        //Amaterasu
+        Bakuen = 0x35B9C743, 
+        ExtentThunder = 0x679005D9,
+        Hyoran = 0x2AF37CB0,
+        Magatama = 0x6CC92E1A,
+        OneSpark = 0x6C6063B4,
+        OneSparkZan = 0x76F2B243,
+        Raikou = 0x7A54A24F,
+        RaikouSub = 0x14FF9C2F,
+        Tekadama = 0x5CA9B7ED,
+        TekadamaExplode = 0x1FF66388,
+        Tsutamaki = 0x456483BF,
+        //Arthur
+        Arrow = 0x3F721E65,
+        SickleBoomerang = 0x48B7E249,
+        ShieldKnightShield = 0x3DC1E142,
+        Axe = 0x155BFE3B,
+        BraceletOfGoddess = 0x1FC7E4A7,
+        CrossSword = 0x60D33C12,
+        GreatSorcery = 0x610EFF3B,
+        Javelin = 0x7E7C0231,
+        Knife = 0x5E109508,
+        Torch = 0x17A93657,
+        TorchFirePillar = 0x2F7BE2FB,
+        //Cap
+        ShieldSlash = 0x7D7EFE20,
+        //Chris
+        SatelliteLaser = 0x554DA965,
+        GrenadeLauncher = 0x7CCACBDD,
+        FlameGun = 0x6252C644,
+        FireGrenadeBomb = 0x30C119C5,
+        FireGrenadeExplode = 0x3C1E9061,
+        FireGrenadeGroundFlame = 0x2F1CD297,
+        GrenadeLauncherExplode = 0x08E7DD3A,
+        HandGrenadeBomb = 0x5BF34CC8,
+        HandGrenadeExplode = 0x3BDDFBC8,
+        HandGun = 0x53A05C62,
+        LandMine = 0x60FC8175,
+        LandMineExplode = 0x5BFCB8C1,
+
+
+    }
     public enum ShotCliType : int
     { 
         Attack = 0,
