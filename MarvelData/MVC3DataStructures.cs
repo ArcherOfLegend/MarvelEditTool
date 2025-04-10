@@ -718,7 +718,316 @@ namespace MarvelData {
         HandGun = 0x53A05C62,
         LandMine = 0x60FC8175,
         LandMineExplode = 0x5BFCB8C1,
-
+        MachineGun = 0x41070531,
+        MagnumGun = 0x4A104CB5,
+        RocketLauncher = 0x73B448F8,
+        SatelliteLaserLock = 0x7450FBFD,
+        ShotGun = 0x7C0FBBB1,
+        //Chun-Li
+        Kikousyou = 0x0E0375DB,
+        Kikouken = 0x3CF662CA,
+        //C.Viper
+        OpticBlast = 0x466316A4,
+        BurningKick = 0x5B12FD8F,
+        SeismoHammer = 0x3C9434E6,
+        //Dante
+        Crystal = 0x7EBFD26D,
+        MillionCarat = 0x65A1FFC3,
+        ThunderBolt = 0x07FBCE75,
+        Twister = 0x72888E7B,
+        Hysteric = 0x2893DFFA,
+        Grapple = 0x30933DD5,
+        JamSession = 0x1E782F67,
+        Tempest = 0x733BE63F,
+        AcidRain = 0x2F99EC0B,
+        AirPlay = 0x6957753A,
+        BulletDanceFinish = 0x759CAB03,
+        Drive = 0x0C4DF8AF,
+        EbonyAndIvory = 0x65AD68F2,
+        FireWorks = 0x406E4AE5,
+        MultiLock = 0x7599E2BB,
+        //DeadPool
+        DualShot = 0x23018021,
+        SomersaultGrenade = 0x2BA02B05,
+        SomersaultGrenadeExplode = 0x3EE5A794,
+        SomersaultLasso = 0x45C8C7C1,
+        SomersaultShuriken = 0x093AF360,
+        //Dormammu
+        DarkDimension = 0x7FC20C5B,
+        FloatBomb = 0x46A51E49,
+        BlackHole = 0x2352A176,
+        ChaosticFlame = 0x7C5B9936,
+        FireCarpet = 0x2CD4CA32,
+        Inferno = 0x70DC15D0,
+        MagicCreate = 0x11BA578C,
+        MagicDestroy = 0x6037E1DE,
+        MagicMagma = 0x614B22B2,
+        MagicMagmaSpread = 0x42EDAF5C,
+        MagicMeteor = 0x3C39AB15,
+        SpiralArrow = 0x42800839, //6H
+        //DrDoom
+        DrDoomJS = 0x1B726F4E,
+        PlasmaBeam = 0x4AD71D0D,
+        DoomsMissile = 0x306C179C,
+        MissileEmplacement = 0x4F5283B4,
+        MolecularShield = 0x44095156,
+        MolecularShieldPre = 0x7E202664,
+        PhotonShot = 0x35621CDB,
+        SphereFlame = 0x0FB5018C,
+        //DrStrange
+        BoltsOfBalthakk = 0x6D5B50D5,
+        FlamesOfFaltine = 0x423E3B46,
+        StrangeReflector = 0x19A80043,
+        OpticalMagicSpreadM = 0x50C0F59B, //Missile
+        AstralProjection = 0x6D1F4A79,
+        ElementalSummon = 0x33835CBB,
+        ElementalSummonExplode = 0x4B4484B4,
+        ElementalSummonShot = 0x2ADA4C48,
+        MagicSword = 0x78CAA8BB,
+        OpticalMagic = 0x5D64877F,
+        OpticalMagicS = 0x32850864,
+        OpticalMagicSpreadV = 0x63490ACC, //Vulcan
+        SpellOfVishanti = 0x6633B6AA,
+        ThrowRose = 0x0ED811B9,
+        //Felicia
+        PleaseHelpMe = 0x6240F456,
+        SandSplash = 0x2005B18C,
+        //Frank
+        LikeAMegaman = 0x76542BE8, // Unused, Franks mega buster
+        WeaponCartSpreadS = 0x7C839716, //Shield
+        WildPitchHit = 0x17FD4493,
+        ThrowWeapon = 0x6D587771,
+        ThrowWeaponB = 0x3F3D3961,
+        WeaponCart = 0x6790D6D8,
+        WeaponCartSpreadV = 0x23EE37D7, //Vulcan
+        WildPitch = 0x5612947B,
+        //Galactus?
+        CosmicBeam = 0x57EDDB90, 
+        //GhostRider
+        HellFire = 0x3B798FBE,
+        BigFirePillar = 0x3F75D1D7,
+        BreakFireChain = 0x48F23B31,
+        FireWall = 0x71FA04EF,
+        //Gouki / Akuma
+        MessatsuGouHadou = 0x79683B0E,
+        GouHadouken = 0x56F568C1,
+        TenmaGouZanku = 0x146DA4F5,
+        //Haggar
+        BodyPressFinish = 0x1AD465F6,
+        IronPipeRolling = 0x4DBF21C2,
+        //Hawkeye
+        AntmanArrow = 0x38A1E3C2,
+        BombArrow = 0x79AC228C,
+        BombArrowExplode = 0x20907355,
+        HyperAimArrow = 0x4920D6B1,
+        IceArrow = 0x0EFC2AE0,
+        NetArrow = 0x2F63C7FD,
+        NormalArrow = 0x7A49A4BB,
+        PierceArrow = 0x567D77EF,
+        PoisonArrow = 0x5C9A6E95,
+        RangingBladeArrow = 0x2B0AE474,
+        SpreadArrow = 0x76386ECA,
+        ThunderCartridge = 0x6858C0F8,
+        ThunderCartridgeExplode = 0x5B734DB8,
+        //Hiryu
+        FormationD = 0x4179442B,
+        Ouroboros = 0x278430CF,
+        OuroborosExit = 0x086784E8,
+        FormationATiger = 0x16807465,
+        FormationBHawk = 0x12BDDCB4,
+        FormationCBom = 0x5CFFD275,
+        FormationCExplode = 0x039B7231,
+        FormationCSpread = 0x165382BF,
+        FormationDSpread = 0x53F4BC31,
+        LegionHawk = 0x2B8902EC,
+        LegionTiger = 0x759DEBD3,
+        OuroborosShot = 0x5DEDBBEB,
+        //Hulk
+        GammaQuake = 0x71FF8ECD,
+        GammaSlam = 0x7BF17AF5,
+        //IronFist
+        DragonAura = 0x3A532A5C,
+        //IronMan
+        ProtonCannon = 0x487BFD3D,
+        UniBeam = 0x4C3148EE,
+        RepulsarBlastSP = 0x3FD6A01E,
+        DownCMissile = 0x2916BD86, // I cant start it with 2 cause VS freaks out, fuck you C#
+        RepulsarBlastSPExpload = 0x048123A0,
+        SmartBomb = 0x16BB6231,
+        //Jill
+        JillMachineGun = 0x6EAB9C41,
+        //Leilei / Hsien-ko
+        AnkihouBomb = 0x7EC9A643,
+        AnkihouBombExplode = 0x53E10A7D,
+        AnkihouKobun = 0x466E3409,
+        AnkihouRolling = 0x3DF6D2AC,
+        HenkyouKi = 0x562F49CA,
+        Tenraiha = 0x6F9E9EC3,
+        Zireitou = 0x1FB13581,
+        //Magneto
+        EMDisruptor = 0x74ED065C,
+        MagneticShockWave = 0x6B9F3037,
+        GravitySqueeze = 0x494BFCE5,
+        HyperGravitation = 0x673B3E2D,
+        MagneticBlast = 0x08C88C7C,
+        MagneticTempst = 0x511D546F,
+        MagnetoAtkSitM = 0x648BC7A8,
+        //MODOK
+        PsionicBlaster = 0x787F0187,
+        JammingBomb = 0x18786113, //Missile, Balloon Bomb + Jamming Bomb?
+        PsionicCubeDamage = 0x14865C0F,
+        JammingBombV = 0x2CB81109, //Unused? Vulcan
+        JammingBombExplode = 0x11E30DD1,
+        LightWall = 0x33EF634D,
+        ModokSitM = 0x63A51A17,
+        ModokStandM = 0x34A181E0,
+        PsionicCube = 0x41A0EABB,
+        //Morrigan
+        SoulFistAbsorb = 0x2E9E7683,
+        FinishingShower = 0x42414817,
+        ShilhouetteBlade = 0x6930D705,
+        SoulFist = 0x0EE4ABD9,
+        //Naruhodo / Phoenix Wright
+        EvidencePhoto = 0x2ACD7CCC,
+        BreakClock = 0x258B3F68,
+        BreakVase = 0x04E6044F,
+        BrownEnvelope = 0x502AE095,
+        BrownEnvelopeExplode = 0x0033064A,
+        DogMissile = 0x3F1CADA2,
+        FileStorm = 0x70E67F70,
+        HammerImpact = 0x533E9B85, // Judge
+        ItemThrow = 0x0F35C297,
+        MobilePhone = 0x1181C7DA,
+        NaruhodoKnife = 0x0769A411,
+        //Nemesis
+        ExatkRocketLauncher = 0x7C1BF533,
+        NemesisRocketLauncher = 0x1EF8E2A1,
+        RocketLauncherExplode = 0x43AC214D,
+        //Nova
+        GMBeam = 0x52AB7CE8,
+        GMPulseL = 0x057B6B10, //Laser
+        BodyBeam = 0x23D6F134,
+        EnergySpear = 0x2CF28271,
+        EnergySpearSpread = 0x3D8E4353,
+        GMPulse = 0x56A208D4, // Vulcan, the shield?
+        //Phoenix
+        TKShot = 0x0A7F5DB4,
+        HealingFieldGathering = 0x52FF40C4,
+        HealingField = 0x16E27D1F,
+        DarkPhoenixFire = 0x375D7301,
+        KaiserPhoenix = 0x4FC63EC8,
+        TKBind = 0x20609B15,
+        TKBindSpread = 0x3C7D3027,
+        TKShotExplode = 0x169F12A8,
+        //RedAremer
+        DarkFire = 0x68F1CA67,
+        Fire = 0x09765265,
+        FirePillar = 0x3113EB4F,
+        //RRaccoon
+        RRaccoonPistol = 0x61915E00,
+        HomingEnergyGun = 0x20D0583A,
+        ClaymoreMine = 0x5A45F410,
+        ClaymoreSpread = 0x08C8FF89,
+        DigHole = 0x252BA144,
+        EnergyGun = 0x0E382BE2,
+        FallRock = 0x52651F46,
+        GatlingGun = 0x7E1D4152,
+        HomingEnergyGunExplode = 0x7E991E77,
+        HomingEnergyGunGroundExplode = 0x73598585,
+        HyperTrap = 0x2E65D791,
+        HyperTrapSpread = 0x191F0E99,
+        JDBomb = 0x5D2FE56B,
+        JDBombExplode = 0x336C37EB,
+        OilBalloon = 0x212F706E,
+        OilBalloonExplode = 0x0D168098,
+        OilBalloonGroundFire = 0x645DC99F,
+        OilBalloonGroundOil = 0x26D89205,
+        PendulumLog = 0x3858485D,
+        PrickleBoard = 0x78972521,
+        TrapLandMine = 0x5E715B30,
+        //Ryu
+        ReflectSinkuHadouken = 0x3E29340C,
+        SinkuHadouken = 0x755CC92B,
+        Hadouken = 0x70C0999B,
+        //Sentinel
+        AttackS = 0x68190BBE,
+        DirectAttackBomb = 0x69579272,
+        DirectAttackBombExplode = 0x0CBFA14C,
+        MiniSentinel = 0x327CBFE0,
+        PlasmaStorm = 0x4307EA09,
+        //SheHulk
+        Car = 0x0E0C068A,
+        //ShumaGorath
+        HyperMysticBlast = 0x34C0C0C7,
+        MysticBlast = 0x15CB4B46,
+        HyperMysticSmash = 0x544398D4,
+        MysticStare = 0x52D36AA7,
+        MysticStareBomb = 0x3BF5C07B,
+        MysticStareExplode = 0x0290C913,
+        //Spencer
+        AttackWire = 0x09CD3E50,
+        SwingWire = 0x4BF93EB8, //Option
+        FurisosoguShi = 0x5EEAAD0D,
+        SwingWire2 = 0x2B0F6E25,//Vulcan
+        //SpiderMan
+        WebBall = 0x50C01DD6,
+        WebMove = 0x4BCC62F5,
+        WebThrow = 0x0EBCA372,
+        //Storm
+        DoubleTyphoon = 0x38F17356,
+        WildStorm = 0x7B2C0B96,
+        IceStorm = 0x2747149B,
+        LightningSphere = 0x49EE84F7,
+        LightningSphereBurst = 0x6035DC6E,
+        LightningStorm = 0x0565B232,
+        WhirlWind = 0x41CC8294,
+        //SuperSkrull
+        SuperBurningSkrull = 0x184470A4,
+        DivePunch = 0x40D3346B,
+        //TaskMaster
+        ArrowRain = 0x2895353D,
+        ArrowShot = 0x34C0372B,
+        Bullet = 0x539BAF3D,
+        //Thor
+        BigThunder = 0x288115B3,
+        MujoThunder = 0x470E38DA,
+        BigTornado = 0x5C0B0A33,
+        MujoSyoryuThunder = 0x30671052,
+        MujoThunderCharge = 0x220D5C0C,
+        //Trish
+        TrishBullet = 0x2E239536,
+        SpadaBoomerang = 0x0DAD20CD,
+        Barrier = 0x4BA25418,   //Peekaboo + Hopscotch?
+        BarrierSpread = 0x73605EBF, //Peekaboo Spread?
+        EnergyBolt = 0x0DBBBA4C,//Hopscotch Spread?
+        //Tron
+        ChushokuRash = 0x5A9AE0FB,
+        KingKobun = 0x52E670F6,
+        KobunLauncher = 0x7B60D628,
+        RockThrow = 0x35F8E561,
+        ShikiDan = 0x402568D5,
+        ShikiDanKobun = 0x358C2C2F,
+        //Vergil
+        RoundTrip = 0x522F4001,
+        RaidSword = 0x6C49A571,
+        SpiralSword = 0x7DCFCC61,
+        StormSword = 0x31BF74A0,
+        JigenZan = 0x0BF320B3,
+        RapidSlash = 0x583FFAAA,
+        StormSwordSpread = 0x604022A6,
+        //VJoe
+        Boomerang = 0x31E834B8,
+        ShockingPinkBomb= 0x00E7F455,
+        ShockingPinkExplode = 0x78D0207D,
+        SixCannon = 0x57372D34,
+        //Wesker
+        WeskerHandGun = 0x49801F12,
+        //Zero
+        Raikousen = 0x14EB75C4,
+        Rekkouha = 0x7DF501E9,
+        GenmuZero = 0x260B0B6B,
+        Hadangeki = 0x4958DFB7,
+        ZeroBuster = 0x5BE88F65
 
     }
     public enum ShotCliType : int
@@ -857,7 +1166,7 @@ namespace MarvelData {
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public struct ShotXLChunk
+    public struct ShotXLChunk // Supports up to 3 entries
     {
         public float numberOfHits;
         public float NumberOfHitsUnk;
@@ -942,6 +1251,857 @@ namespace MarvelData {
         public int unk520;
         public int unk524;
     }
+
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotX4Chunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+
+        public int unk520; // Start of Entry 4
+        public int unk524;
+        public int unk528;
+        public int unk52C;
+        public ShotCliType CollisionType4;
+        public int CollisionRules4;
+        public EnumUnk CLIFlagA4;
+        public EnumUnk CLIFlagB4;
+        public int unk5E0;
+        public int unk5E4;
+        public float Hitbox4Z;
+        public float Hitbox4Y;
+        public float Hitbox4X;
+        public float unk5F4;
+        public BoneReferenceId BoneID4;
+        public float unk5FC;
+        public float unk600;
+        public float unk604;
+        public float UnkZ4HitboxStretch;
+        public float UnkY4HitboxStretch;
+        public float UnkX4HitboxStretch;
+        public float unk614;
+        public float Hitbox4Size;
+        public int unk61C;
+
+
+        //end padding
+        public int unk620;
+        public int unk624;
+    }
+
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotX5Chunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+
+        public int unk520; // Start of Entry 4
+        public int unk524;
+        public int unk528;
+        public int unk52C;
+        public ShotCliType CollisionType4;
+        public int CollisionRules4;
+        public EnumUnk CLIFlagA4;
+        public EnumUnk CLIFlagB4;
+        public int unk5E0;
+        public int unk5E4;
+        public float Hitbox4Z;
+        public float Hitbox4Y;
+        public float Hitbox4X;
+        public float unk5F4;
+        public BoneReferenceId BoneID4;
+        public float unk5FC;
+        public float unk600;
+        public float unk604;
+        public float UnkZ4HitboxStretch;
+        public float UnkY4HitboxStretch;
+        public float UnkX4HitboxStretch;
+        public float unk614;
+        public float Hitbox4Size;
+        public int unk61C;
+
+        public int unk720; // Start of Entry 5
+        public int unk724;
+        public int unk728;
+        public int unk72C;
+        public ShotCliType CollisionType5;
+        public int CollisionRules5;
+        public EnumUnk CLIFlagA5;
+        public EnumUnk CLIFlagB5;
+        public int unk7E0;
+        public int unk7E4;
+        public float Hitbox5Z;
+        public float Hitbox5Y;
+        public float Hitbox5X;
+        public float unk7F4;
+        public BoneReferenceId BoneID5;
+        public float unk7FC;
+        public float unk800;
+        public float unk804;
+        public float UnkZ5HitboxStretch;
+        public float UnkY5HitboxStretch;
+        public float UnkX5HitboxStretch;
+        public float unk814;
+        public float Hitbox5Size;
+        public int unk81C;
+
+        //end padding
+        public int unk820;
+        public int unk824;
+    }
+
+
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotX6Chunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+
+        public int unk520; // Start of Entry 4
+        public int unk524;
+        public int unk528;
+        public int unk52C;
+        public ShotCliType CollisionType4;
+        public int CollisionRules4;
+        public EnumUnk CLIFlagA4;
+        public EnumUnk CLIFlagB4;
+        public int unk5E0;
+        public int unk5E4;
+        public float Hitbox4Z;
+        public float Hitbox4Y;
+        public float Hitbox4X;
+        public float unk5F4;
+        public BoneReferenceId BoneID4;
+        public float unk5FC;
+        public float unk600;
+        public float unk604;
+        public float UnkZ4HitboxStretch;
+        public float UnkY4HitboxStretch;
+        public float UnkX4HitboxStretch;
+        public float unk614;
+        public float Hitbox4Size;
+        public int unk61C;
+
+        public int unk720; // Start of Entry 5
+        public int unk724;
+        public int unk728;
+        public int unk72C;
+        public ShotCliType CollisionType5;
+        public int CollisionRules5;
+        public EnumUnk CLIFlagA5;
+        public EnumUnk CLIFlagB5;
+        public int unk7E0;
+        public int unk7E4;
+        public float Hitbox5Z;
+        public float Hitbox5Y;
+        public float Hitbox5X;
+        public float unk7F4;
+        public BoneReferenceId BoneID5;
+        public float unk7FC;
+        public float unk800;
+        public float unk804;
+        public float UnkZ5HitboxStretch;
+        public float UnkY5HitboxStretch;
+        public float UnkX5HitboxStretch;
+        public float unk814;
+        public float Hitbox5Size;
+        public int unk81C;
+
+        public int unk820; // Start of Entry 6
+        public int unk824;
+        public int unk828;
+        public int unk82C;
+        public ShotCliType CollisionType6;
+        public int CollisionRules6;
+        public EnumUnk CLIFlagA6;
+        public EnumUnk CLIFlagB6;
+        public int unk8E0;
+        public int unk8E4;
+        public float Hitbox6Z;
+        public float Hitbox6Y;
+        public float Hitbox6X;
+        public float unk8F4;
+        public BoneReferenceId BoneID6;
+        public float unk8FC;
+        public float unk900;
+        public float unk904;
+        public float UnkZ6HitboxStretch;
+        public float UnkY6HitboxStretch;
+        public float UnkX6HitboxStretch;
+        public float unk914;
+        public float Hitbox6Size;
+        public int unk91C;
+
+        //end padding
+        public int unk920;
+        public int unk924;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotX7Chunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+
+        public int unk520; // Start of Entry 4
+        public int unk524;
+        public int unk528;
+        public int unk52C;
+        public ShotCliType CollisionType4;
+        public int CollisionRules4;
+        public EnumUnk CLIFlagA4;
+        public EnumUnk CLIFlagB4;
+        public int unk5E0;
+        public int unk5E4;
+        public float Hitbox4Z;
+        public float Hitbox4Y;
+        public float Hitbox4X;
+        public float unk5F4;
+        public BoneReferenceId BoneID4;
+        public float unk5FC;
+        public float unk600;
+        public float unk604;
+        public float UnkZ4HitboxStretch;
+        public float UnkY4HitboxStretch;
+        public float UnkX4HitboxStretch;
+        public float unk614;
+        public float Hitbox4Size;
+        public int unk61C;
+
+        public int unk720; // Start of Entry 5
+        public int unk724;
+        public int unk728;
+        public int unk72C;
+        public ShotCliType CollisionType5;
+        public int CollisionRules5;
+        public EnumUnk CLIFlagA5;
+        public EnumUnk CLIFlagB5;
+        public int unk7E0;
+        public int unk7E4;
+        public float Hitbox5Z;
+        public float Hitbox5Y;
+        public float Hitbox5X;
+        public float unk7F4;
+        public BoneReferenceId BoneID5;
+        public float unk7FC;
+        public float unk800;
+        public float unk804;
+        public float UnkZ5HitboxStretch;
+        public float UnkY5HitboxStretch;
+        public float UnkX5HitboxStretch;
+        public float unk814;
+        public float Hitbox5Size;
+        public int unk81C;
+
+        public int unk820; // Start of Entry 6
+        public int unk824;
+        public int unk828;
+        public int unk82C;
+        public ShotCliType CollisionType6;
+        public int CollisionRules6;
+        public EnumUnk CLIFlagA6;
+        public EnumUnk CLIFlagB6;
+        public int unk8E0;
+        public int unk8E4;
+        public float Hitbox6Z;
+        public float Hitbox6Y;
+        public float Hitbox6X;
+        public float unk8F4;
+        public BoneReferenceId BoneID6;
+        public float unk8FC;
+        public float unk900;
+        public float unk904;
+        public float UnkZ6HitboxStretch;
+        public float UnkY6HitboxStretch;
+        public float UnkX6HitboxStretch;
+        public float unk914;
+        public float Hitbox6Size;
+        public int unk91C;
+
+        public int unk920; // Start of Entry 7
+        public int unk924;
+        public int unk928;
+        public int unk92C;
+        public ShotCliType CollisionType7;
+        public int CollisionRules7;
+        public EnumUnk CLIFlagA7;
+        public EnumUnk CLIFlagB7;
+        public int unk9E0;
+        public int unk9E4;
+        public float Hitbox7Z;
+        public float Hitbox7Y;
+        public float Hitbox7X;
+        public float unk9F4;
+        public BoneReferenceId BoneID7;
+        public float unk9FC;
+        public float unkA00;
+        public float unkA04;
+        public float UnkZ7HitboxStretch;
+        public float UnkY7HitboxStretch;
+        public float UnkX7HitboxStretch;
+        public float unkA14;
+        public float Hitbox7Size;
+        public int unkA1C;
+
+        //end padding
+        public int unkA20;
+        public int unkA24;
+    }
+
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct ShotX8Chunk
+    {
+        public float numberOfHits;
+        public float NumberOfHitsUnk;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA1;
+        public EnumUnk CLIFlagB1;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID1;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+
+        public int unk3C0; //Start of Entry 2
+        public int unk3C4;
+        public int unk3C8;
+        public int unk3CC;
+        public ShotCliType CollisionType2;
+        public int CollisionRules2;
+        public EnumUnk CLIFlagA2;
+        public EnumUnk CLIFlagB2;
+        public int unk3E0;
+        public int unk3E4;
+        public float Hitbox2Z;
+        public float Hitbox2Y;
+        public float Hitbox2X;
+        public float unk3F4;
+        public BoneReferenceId BoneID2;
+        public float unk3FC;
+        public float unk400;
+        public float unk404;
+        public float UnkZ2HitboxStretch;
+        public float UnkY2HitboxStretch;
+        public float UnkX2HitboxStretch;
+        public float unk414;
+        public float Hitbox2Size;
+        public int unk41C;
+
+        public int unk420; // Start of Entry 3
+        public int unk424;
+        public int unk428;
+        public int unk42C;
+        public ShotCliType CollisionType3;
+        public int CollisionRules3;
+        public EnumUnk CLIFlagA3;
+        public EnumUnk CLIFlagB3;
+        public int unk4E0;
+        public int unk4E4;
+        public float Hitbox3Z;
+        public float Hitbox3Y;
+        public float Hitbox3X;
+        public float unk4F4;
+        public BoneReferenceId BoneID3;
+        public float unk4FC;
+        public float unk500;
+        public float unk504;
+        public float UnkZ3HitboxStretch;
+        public float UnkY3HitboxStretch;
+        public float UnkX3HitboxStretch;
+        public float unk514;
+        public float Hitbox3Size;
+        public int unk51C;
+
+        public int unk520; // Start of Entry 4
+        public int unk524;
+        public int unk528;
+        public int unk52C;
+        public ShotCliType CollisionType4;
+        public int CollisionRules4;
+        public EnumUnk CLIFlagA4;
+        public EnumUnk CLIFlagB4;
+        public int unk5E0;
+        public int unk5E4;
+        public float Hitbox4Z;
+        public float Hitbox4Y;
+        public float Hitbox4X;
+        public float unk5F4;
+        public BoneReferenceId BoneID4;
+        public float unk5FC;
+        public float unk600;
+        public float unk604;
+        public float UnkZ4HitboxStretch;
+        public float UnkY4HitboxStretch;
+        public float UnkX4HitboxStretch;
+        public float unk614;
+        public float Hitbox4Size;
+        public int unk61C;
+
+        public int unk720; // Start of Entry 5
+        public int unk724;
+        public int unk728;
+        public int unk72C;
+        public ShotCliType CollisionType5;
+        public int CollisionRules5;
+        public EnumUnk CLIFlagA5;
+        public EnumUnk CLIFlagB5;
+        public int unk7E0;
+        public int unk7E4;
+        public float Hitbox5Z;
+        public float Hitbox5Y;
+        public float Hitbox5X;
+        public float unk7F4;
+        public BoneReferenceId BoneID5;
+        public float unk7FC;
+        public float unk800;
+        public float unk804;
+        public float UnkZ5HitboxStretch;
+        public float UnkY5HitboxStretch;
+        public float UnkX5HitboxStretch;
+        public float unk814;
+        public float Hitbox5Size;
+        public int unk81C;
+
+        public int unk820; // Start of Entry 6
+        public int unk824;
+        public int unk828;
+        public int unk82C;
+        public ShotCliType CollisionType6;
+        public int CollisionRules6;
+        public EnumUnk CLIFlagA6;
+        public EnumUnk CLIFlagB6;
+        public int unk8E0;
+        public int unk8E4;
+        public float Hitbox6Z;
+        public float Hitbox6Y;
+        public float Hitbox6X;
+        public float unk8F4;
+        public BoneReferenceId BoneID6;
+        public float unk8FC;
+        public float unk900;
+        public float unk904;
+        public float UnkZ6HitboxStretch;
+        public float UnkY6HitboxStretch;
+        public float UnkX6HitboxStretch;
+        public float unk914;
+        public float Hitbox6Size;
+        public int unk91C;
+
+        public int unk920; // Start of Entry 7
+        public int unk924;
+        public int unk928;
+        public int unk92C;
+        public ShotCliType CollisionType7;
+        public int CollisionRules7;
+        public EnumUnk CLIFlagA7;
+        public EnumUnk CLIFlagB7;
+        public int unk9E0;
+        public int unk9E4;
+        public float Hitbox7Z;
+        public float Hitbox7Y;
+        public float Hitbox7X;
+        public float unk9F4;
+        public BoneReferenceId BoneID7;
+        public float unk9FC;
+        public float unkA00;
+        public float unkA04;
+        public float UnkZ7HitboxStretch;
+        public float UnkY7HitboxStretch;
+        public float UnkX7HitboxStretch;
+        public float unkA14;
+        public float Hitbox7Size;
+        public int unkA1C;
+
+        public int unkA20; // Start of Entry 8
+        public int unkA24;
+        public int unkA28;
+        public int unkA2C;
+        public ShotCliType CollisionType8;
+        public int CollisionRules8;
+        public EnumUnk CLIFlagA8;
+        public EnumUnk CLIFlagB8;
+        public int unkAE0;
+        public int unkAE4;
+        public float Hitbox8Z;
+        public float Hitbox8Y;
+        public float Hitbox8X;
+        public float unkAF4;
+        public BoneReferenceId BoneID8;
+        public float unkAFC;
+        public float unkB00;
+        public float unkB04;
+        public float UnkZ8HitboxStretch;
+        public float UnkY8HitboxStretch;
+        public float UnkX8HitboxStretch;
+        public float unkB14;
+        public float Hitbox8Size;
+        public int unkB1C;
+        //end padding
+        public int unkB20;
+        public int unkB24;
+    }
+
+
+
+
+
+
+
 
     [StructLayout(LayoutKind.Sequential)]
         public struct StatusChunk

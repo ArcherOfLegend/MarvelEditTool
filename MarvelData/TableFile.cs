@@ -49,7 +49,8 @@ namespace MarvelData
         public static Type[] structTypes = { typeof(StructEntry<StatusChunk>), typeof(StructEntry<ATKInfoChunk>), typeof(StructEntry<BaseActChunk>),
             typeof(CmdSpAtkEntry), typeof(CmdComboEntry), typeof(AnmChrEntry), typeof(CollisionEntry), typeof(StructEntry<ShotChunk>),
             typeof(StructEntry<ShotSChunk>), typeof(StructEntry<ShotLChunk>), typeof(StructEntry<ShotXSChunk>), typeof(StructEntry<ProfileSelfChunk>), 
-            typeof(StructEntry<ProfileChunk>), typeof(StructEntry<ShotXLChunk>)};
+            typeof(StructEntry<ProfileChunk>), typeof(StructEntry<ShotXLChunk>), typeof(StructEntry<ShotX4Chunk>), typeof(StructEntry<ShotX5Chunk>),
+            typeof(StructEntry<ShotX6Chunk>), typeof(StructEntry<ShotX7Chunk>), typeof(StructEntry<ShotX8Chunk>)};
         public static int[] structSizes = { 0x350, 0x18C, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
         public static string[] structExtensions = { "CHS", "ATI", "CBA", "CSP", "CCM", "CAC", "CLI", "SHT", "CPI" };
 
@@ -429,7 +430,7 @@ namespace MarvelData
                     if (entryCount == 0) { S = 10; }
                     else if (entryCount == 1) { S = 8; }
                     else if (entryCount == 2) { S = 9; }
-                    else if (entryCount == 3) { S = 13; }
+                    else if (entryCount >= 3) { S = 10 + entryCount; }
                     else
                     {
                         MessageBox.Show("Unsupported SHTRef entry count, " + entryCount + " entries detected." +
