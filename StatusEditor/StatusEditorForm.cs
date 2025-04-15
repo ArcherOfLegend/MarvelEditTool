@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
@@ -115,7 +116,7 @@ namespace StatusEditor
                 {
                     structView.Rows[i + offset].DefaultCellStyle.BackColor = Color.Linen;
                 }
-                if (fieldList[i].Name == "subChunkType" || fieldList[i].Name == "objectReferenceId")
+                if (fieldList[i].Name == "subChunkType" || fieldList[i].Name == "weaponID")
                 {
                     structView.Rows[i + offset].DefaultCellStyle.BackColor = Color.LightGray;
                 }
@@ -624,6 +625,7 @@ namespace StatusEditor
 
             using (SaveFileDialog saveFileDialog1 = new SaveFileDialog())
             {
+                Regex rgx = new Regex("[^a-zA-Z0-9 -]");
                 saveFileDialog1.Title = "Export " + tablefile.table[animBox.SelectedIndex].GetFancyName();
                 if (tablefile.fileExtension == "CSP")
                 {
@@ -687,8 +689,8 @@ namespace StatusEditor
                 }
                 saveFileDialog1.FilterIndex = 1;
                 saveFileDialog1.RestoreDirectory = true;
-
-                saveFileDialog1.FileName = tablefile.table[animBox.SelectedIndex].GetFilename();
+                saveFileDialog1.FileName = rgx.Replace(tablefile.table[animBox.SelectedIndex].GetFilename(), ""); //running same name cleanup for improper characters
+                //saveFileDialog1.FileName = tablefile.table[animBox.SelectedIndex].GetFilename();
 
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
@@ -1406,7 +1408,7 @@ namespace StatusEditor
                 AddTags(typeof(InputCode), true);
             else if (tag.Contains("subChunkType"))
                 AddTags(typeof(SubChunkType), true);
-            else if (tag.Contains("boneReferenceId"))
+            else if (tag.Contains("boneReferenceId") || tag.Contains("boneID"))
                 AddTags(typeof(BoneReferenceId), true);
             else if (tag.Contains("ShtFlagsA"))
                 AddTags(typeof(ShtFlagsA), true);
@@ -1434,7 +1436,7 @@ namespace StatusEditor
                 AddTags(typeof(ProfileFlags), true);
             else if (tag.Contains("IdentityFlags2"))
                 AddTags(typeof(ProfileFlagsB), true);
-            else if (tag.Contains("durabilityType"))
+            else if (tag.Contains("durabilityType") || tag.Contains("projectileDestruction"))
                 AddTags(typeof(Durability), false);
             else if (tag.Contains("playWhiffSFXOnNormals"))
                 AddTags(typeof(PlayWhiffSFXOnNormals), false);
@@ -1444,12 +1446,15 @@ namespace StatusEditor
                 AddTags(typeof(ScreenShake), true);
             else if (tag.Contains("CollisionType"))
                 AddTags(typeof(ShotCliType), false);
-            else if (tag.Contains("BoneID"))
-                AddTags(typeof(BoneReferenceId), true);
             else if (tag.Contains("CLIFlag"))
                 AddTags(typeof(EnumUnk), true);
             else if (tag.Contains("projectileID"))
                 AddTags(typeof(ProjectileID), true);
+            else if (tag.Contains("cancelFlags"))
+                AddTags(typeof(CancelFlags), true);
+            else if (tag.Contains("weaponID"))
+                AddTags(typeof(WeaponID), true);
+
             else
             {
                 tagsDataGridView.DataSource = null;

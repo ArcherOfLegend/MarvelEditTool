@@ -161,7 +161,7 @@ namespace MarvelData
             chunk.size = 0x20;
             chunk.bHasData = true;
             chunk.name = "unknown";
-            chunk.data.objectReferenceId = -1;
+            chunk.data.weaponID = WeaponID.None;
             chunk.data.unk04 = -1;
             subEntries.Add(chunk);
         }

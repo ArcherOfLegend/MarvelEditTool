@@ -522,8 +522,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotHeaderChunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1052,8 +1052,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
         public struct ShotXSChunk
         {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float NumberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1066,47 +1066,47 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
         public struct ShotSChunk
         {
-            public float numberOfHits;
-            public float NumberOfHitsUnk;
-            public float durability;
-            public float durabilityUnk;
-            public Durability durabilityType;
-            public int unk354;
-            public float unk358;
-            public int unk35C;
-            public int unk360; //Start of Entry 1
-            public int unk364;
-            public int unk368;
-            public int unk36C;
-            public ShotCliType CollisionType;   //370
-            public int CollisionRules;          //374
-            public EnumUnk CLIFlagA;
-            public EnumUnk CLIFlagB;
-            public int unk380;
-            public int unk384;
-            public float HitboxZ;
-            public float HitboxY;
-            public float HitboxX;
-            public float unk394;
-            public BoneReferenceId BoneID;
-            public float unk39C;
-            public float unk3A0;
-            public float unk3A4;
-            public float UnkZHitboxStretch;
-            public float UnkYHitboxStretch;
-            public float UnkXHitboxStretch;
-            public float unk3B4;
-            public float HitboxSize;
-            public int unk3BC;
-            public int unk3C0;
-            public int unk3C4;
-        }
+        public float numberOfHitsToDestroy;
+        public float NumberOfHitsDurability;
+        public float durability;
+        public float durabilityUnk;
+        public Durability durabilityType;
+        public int unk354;
+        public float unk358;
+        public int unk35C;
+        public int unk360; //Start of Entry 1
+        public int unk364;
+        public int unk368;
+        public int unk36C;
+        public ShotCliType CollisionType;   //370
+        public int CollisionRules;          //374
+        public EnumUnk CLIFlagA;
+        public EnumUnk CLIFlagB;
+        public int unk380;
+        public int unk384;
+        public float HitboxZ;
+        public float HitboxY;
+        public float HitboxX;
+        public float unk394;
+        public BoneReferenceId BoneID;
+        public float unk39C;
+        public float unk3A0;
+        public float unk3A4;
+        public float UnkZHitboxStretch;
+        public float UnkYHitboxStretch;
+        public float UnkXHitboxStretch;
+        public float unk3B4;
+        public float HitboxSize;
+        public int unk3BC;
+        public int unk3C0;
+        public int unk3C4;
+    }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct ShotLChunk
         {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float NumberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1168,8 +1168,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotXLChunk // Supports up to 3 entries
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float NumberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1257,8 +1257,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotX4Chunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1377,8 +1377,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotX5Chunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1522,8 +1522,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotX6Chunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1689,8 +1689,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotX7Chunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -1883,8 +1883,8 @@ namespace MarvelData {
     [StructLayout(LayoutKind.Sequential)]
     public struct ShotX8Chunk
     {
-        public float numberOfHits;
-        public float NumberOfHitsUnk;
+        public float numberOfHitsToDestroy;
+        public float numberOfHitsDurability;
         public float durability;
         public float durabilityUnk;
         public Durability durabilityType;
@@ -2095,7 +2095,6 @@ namespace MarvelData {
         public int unkB20;
         public int unkB24;
     }
-
 
 
 
@@ -2410,8 +2409,17 @@ namespace MarvelData {
         Strength11 = 11,
         Strength12 = 12
     }
+    public enum EffectDirection : uint
+    {
+        Any = 0,
+        Camera = 1,
+        Downward = 2,
+        Forward = 3,
+        ForwardRandom = 4
 
-        [StructLayout(LayoutKind.Sequential)]
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
         public struct ATKInfoChunk
         {
             public int index;
@@ -2447,7 +2455,7 @@ namespace MarvelData {
             public float MeterGainOnHit;
             public int OppMeterGain;
             public int meterSteal;
-            public int hitboxDestructionUnk;
+            public Durability projectileDestruction;
             public int hiddenStunUnk;
             public int AddedGroundHitstun;
             public int AddedCounterhitStun;
@@ -2502,15 +2510,15 @@ namespace MarvelData {
             public HitSFXSubGroup hitSFXSubGroup;
             public HitSFXEntry hitSFXEntry;
             public PlayWhiffSFXOnNormals playWhiffSFXOnNormals;
-            public int launcherUnk;
-            public float EffectRotationA;
-            public float EffectRotationB;
-            public float EffectRotationC;
+            public EffectDirection effectType;
+            public float EffectRotation1;
+            public float EffectRotation2;
+            public float EffectRotation3;
             public int EffectRandomRotationDisplacement;
             public int unk174;
             public int IDReference2;
             public int FramesToIDReference2;
-            public int unk180;
+            public int MultiCharHitsToIDRef2;
             public int HitsToIDReference2;
             public int unk188;
         }
@@ -2828,6 +2836,44 @@ namespace MarvelData {
             Unk0x40000000 = 0x40000000,
             Unk0x80000000 = 0x80000000
     }
+    [Flags]
+    public enum AirGroundState : uint
+    { //Flags are reversed maybe?
+        None = 0,
+        Unk0x01 = 0x00000001,
+        Crouching = 0x00000002,
+        Unk0x04 = 0x00000004,
+        Unk0x08 = 0x00000008,
+        Unk0x10 = 0x00000010,
+        Unk0x20 = 0x00000020,
+        Unk0x40 = 0x00000040,
+        Unk0x80 = 0x00000080,
+        Unk0x0100 = 0x00000100,
+        Unk0x0200 = 0x00000200,
+        Unk0x0400 = 0x00000400,
+        Unk0x0800 = 0x00000800,
+        Unk0x1000 = 0x00001000,
+        Unk0x2000 = 0x00002000,
+        Blocking = 0x00004000,
+        Unk0x8000 = 0x00008000,
+        Unk0x10000 = 0x00010000,
+        Unk0x20000 = 0x00020000,
+        Unk0x40000 = 0x00040000,
+        Unk0x80000 = 0x00080000,
+        Unk0x100000 = 0x00100000,
+        Unk0x200000 = 0x00200000,
+        Unk0x400000 = 0x00400000,
+        Unk0x800000 = 0x00800000,
+        Unk0x01000000 = 0x01000000,
+        Unk0x02000000 = 0x02000000,
+        Unk0x04000000 = 0x04000000,
+        Unk0x08000000 = 0x08000000,
+        Unk0x10000000 = 0x10000000,
+        Unk0x20000000 = 0x20000000,
+        Unk0x40000000 = 0x40000000,
+        Unk0x80000000 = 0x80000000
+
+    }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct BaseActChunk
@@ -2887,7 +2933,7 @@ namespace MarvelData {
         [StructLayout(LayoutKind.Sequential)]
         public struct CollisionStandardChunk // hitbox / hurtbox ??
         {
-            public int objectReferenceId; //ffff = default/char body, 01/02 etc are props
+            public WeaponID weaponID; //ffff = default/char body, 01/02 etc are props
             public int unk04;
             public BoneReferenceId boneReferenceId;
             public float zAxis;
@@ -3232,7 +3278,7 @@ namespace MarvelData {
         Detached = 4294967295,
         Origin1 = 01,
         Origin2 = 02,
-        Spine3 = 03,
+        Pelvis = 03,
         Spine2 = 04,
         Chest = 05,
         Neck = 06,
@@ -3486,15 +3532,40 @@ namespace MarvelData {
         Bone254 = 254,
         Origin = 255
     }
+    public enum WeaponID : uint { 
+    None = 4294967295,
+    Weapon0 = 0x00,
+    Weapon1 = 0x01,
+    Weapon2 = 0x02,
+    Weapon3 = 0x03,
+    Weapon4 = 0x04,
+    Weapon5 = 0x05,
+    Weapon6 = 0x06,
+    Weapon7 = 0x07,
+    Weapon8 = 0x08,
+    Weapon9 = 0x09,
+    Weapon10 = 0x0A,
+    Weapon11 = 0x0B,
+    Weapon12 = 0x0C,
+    Weapon13 = 0x0D,
+    Weapon14 = 0x0E,
+    Weapon15 = 0x0F,
+    Weapon16 = 0x10,
+    Weapon17 = 0x11,
+    Weapon18 = 0x12,
+    Weapon19 = 0x13,
+    Weapon20 = 0x14,
+    Weapon21 = 0x15
+    }
 
     [Flags]
     public enum CLIProperties : uint
     {
         None = 0,
         Unk0x01 = 0x00000001,
-        Unk0x02 = 0x00000002,
+        CanHitChar = 0x00000002,
         Unk0x04 = 0x00000004,
-        Unk0x08 = 0x00000008,
+        CanHitProjectiles = 0x00000008,
         Unk0x10 = 0x00000010,
         Unk0x20 = 0x00000020,
         Unk0x40 = 0x00000040,
@@ -3510,7 +3581,7 @@ namespace MarvelData {
         Unk0x10000 = 0x00010000,
         Unk0x20000 = 0x00020000,
         Unk0x40000 = 0x00040000,
-        Unk0x80000 = 0x00080000,
+        DestroyProjectiles = 0x00080000,
         Unk0x100000 = 0x00100000,
         Unk0x200000 = 0x00200000,
         Unk0x400000 = 0x00400000,
@@ -3524,8 +3595,18 @@ namespace MarvelData {
         Unk0x40000000 = 0x40000000,
         Unk0x80000000 = 0x80000000
     }
+    [Flags]
+    public enum CancelFlags : uint
+    {
+        None = 0,
+        Whiff = 2,
+        OnHit = 16,
+        OnBlock = 64,
+        Blocking = 4096
+    }
 
-        public enum SpecialProperties
+
+    public enum SpecialProperties
         {
             normal = 1769234688,
             disabled = 1769234689
@@ -3643,8 +3724,32 @@ namespace MarvelData {
             public int unk18;
             public int unk1C;
         }
+    [StructLayout(LayoutKind.Sequential)]
+        public struct SpatkCaptureStateChunk // 0A
+        {
+        public SubChunkType subChunkType; // 0A
+        public int PlayerActionClass;
+        public int PlayerActionIndex;
+        public int EnemyActionClass;
+        public int EnemyClassIndex;
+        public int unk14;
+        public int unk18;
+        public int unk1C;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SpatkAirGroundState // 0B
+    {
+        public SubChunkType subChunkType; //0B
+        public AirGroundState unk04;
+        public int unk08;
+        public int unk0C;
+        public int unk10;
+        public int unk14;
+        public int unk18;
+        public int unk1C;
+    }
 
-        public struct SpatkRequiredStateUnk // 17
+    public struct SpatkRequiredStateUnk // 17
         {
             public SubChunkType subChunkType; // 17
             public int stateID;
@@ -3667,7 +3772,18 @@ namespace MarvelData {
             public int unk18;
             public int unk1C;
         }
-        [StructLayout(LayoutKind.Sequential)]
+    public struct SpatkVergilSwordsChunk // 19
+    {
+        public SubChunkType subChunkType; //19
+        public int anmchrEntry;
+        public int unk08;
+        public int unk0C;
+        public int unk10;
+        public int unk14;
+        public int unk18;
+        public int unk1C;
+    }
+    [StructLayout(LayoutKind.Sequential)]
         public struct SpatkModeRequiredChunk // 1E
         {
             public SubChunkType subChunkType; // 1E
@@ -3800,7 +3916,7 @@ namespace MarvelData {
         public struct SpatkAllowedChainChunk // 3F
         {
             public SubChunkType subChunkType; //3F
-            public int validityFlags;
+            public CancelFlags cancelFlags;
             public int unk08;
             public int unk0C;
             public int unk10;
@@ -3813,7 +3929,7 @@ namespace MarvelData {
         public struct SpatkAdvGuardUnk // 49
         {
             public SubChunkType subChunkType; //49
-            public int validityFlags;
+            public CancelFlags cancelFlags;
             public int unk08;
             public int unk0C;
             public int unk10;
@@ -3833,6 +3949,20 @@ namespace MarvelData {
         public int unk18;
         public int unk1C;
         }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HeightRestriction // 51
+    {
+        public int Height; //51
+        public int unk04;
+        public int unk08;
+        public int unk0C;
+        public int unk10;
+        public int unk14;
+        public int unk18;
+        public int unk1C;
+    }
+
+
     [StructLayout(LayoutKind.Sequential)]
         public struct SpatkHaggarFlagsUnk // 55
         {
@@ -3990,6 +4120,8 @@ namespace MarvelData {
             CharacterClassRequired_23 = 23, //17
             [Description("24 Character Class Restriction")]
             CharacterClassRestricted_24 = 24, //18
+            [Description("25 VergilBlisteringSwords")]
+            vergilChunk_25 = 25, //19
             [Description("26 Taskmaster Air Arrows Unk")]
             taskmasterFlags_26 = 26, //1A
             [Description("30 Install Requirement")]
@@ -4044,7 +4176,9 @@ namespace MarvelData {
         public class MVC3DataStructures
         {
             public static string[] NumpadDirections = { "5", "6", "4", "?", "8", "9", "7", "?", "2", "3", "1" };
-            public static List<string> SubChunkTypeList = new List<string>(new string[] { "standardInput", "dashDirectionInput", "twoButtonInput1", "directionAndButtonInput", "twoButtonInput2", "executeAction", "modeRequired", "TACDHCAction", "restrictedState", "chrisStateCheck", "prohibitedFollowUpAction", "airDash", "airSpecialActionLimit", "guardTACAction", "hypers", "allowedChainOnState" });
+            public static List<string> SubChunkTypeList = new List<string>(new string[] { "standardInput", "dashDirectionInput", "twoButtonInput1", "directionAndButtonInput", 
+                "twoButtonInput2", "executeAction", "modeRequired", "TACDHCAction", "restrictedState", "chrisStateCheck", "vergilSwordsCheck", "prohibitedFollowUpAction", "airDash", "airSpecialActionLimit", 
+                "guardTACAction", "hypers", "allowedChainOnState" });
 
             //FIXME: fugly implementation :s
             public static Type[] SpatkChunkTypes =
@@ -4059,8 +4193,8 @@ namespace MarvelData {
             typeof(SpatkTwoButtonAirdashChunk), // 07     [7] 
             typeof(SpatkUnkChunk), // 08                  [8] 
             typeof(SpatkActionChunk), // 09               [9]
-            typeof(SpatkUnkChunk), // 00                  [10]
-            typeof(SpatkUnkChunk), // 00                  [11]
+            typeof(SpatkCaptureStateChunk), // 0A         [10]
+            typeof(SpatkAirGroundState), // 0B            [11]
             typeof(SpatkUnkChunk), // 00                  [12]
             typeof(SpatkUnkChunk), // 00                  [13]
             typeof(SpatkUnkChunk), // 00                  [14]
@@ -4074,7 +4208,7 @@ namespace MarvelData {
             typeof(SpatkUnkChunk), // 00                  [22]
             typeof(SpatkRequiredStateUnk), // 17          [23]
             typeof(SpatkChrisStateChunk), // 00           [24]
-            typeof(SpatkUnkChunk), // 00                  [25]
+            typeof(SpatkVergilSwordsChunk), // 19         [25]
             typeof(SpatkSnapBack), // 00                  [26]
             typeof(SpatkUnkChunk), // 00                  [27]
             typeof(SpatkUnkChunk), // 00                  [28]
