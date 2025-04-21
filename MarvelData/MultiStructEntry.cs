@@ -8,6 +8,26 @@ namespace MarvelData
 {
     public class MultiStructEntry : TableEntry
     {
+        public int anmChrIndexMaybe;
+        public static int[] anmChrIndexOffsets = {
+            0, // 0 movement
+            0x1e, // 1 blocking
+            0x32,
+            0x3c,  //3 Damage
+            0x64,  //4 Knockdown
+            0x82,  //Non combat
+            0x96,  // normals?
+            0xAA,  // airdashes?
+            0xBE,  // 8 specials
+            0xDC,  //9 supers
+            0xF0,  //10 ?? dormamu air spell charge
+            0x104, // 11 Capture States
+            0x12C, //12 Anmtdown
+            0x154, //13 Misc
+            0x168, //14 TAC and Launcher
+            0x17C, // 15 flight
+            0x190  //16 etc
+        };
         public List<StructEntryBase> subEntries;
         private string chunkName;
 
@@ -99,7 +119,12 @@ namespace MarvelData
                 }
                 else if (subEntries[i] is StructEntry<SpatkTwoButtonChunk>)
                 {
-                    nameSB.Append("PP");
+                    SpatkTwoButtonChunk chunk = ((StructEntry<SpatkTwoButtonChunk>)subEntries[i]).data;
+                    if ((int)chunk.atkS == 1) { nameSB.Append("AS"); }
+                    else
+                    {
+                        nameSB.Append("AA");
+                    }
                 }
                 else if (subEntries[i] is StructEntry<SpatkTwoButtonAirdashChunk>)
                 {
@@ -113,7 +138,19 @@ namespace MarvelData
                     {
                         nameSB.Append("?");
                     }
-                    nameSB.Append("PP");
+                    nameSB.Append("AA");
+                }
+
+                else if (subEntries[i] is StructEntry<SpatkActionChunk> && !isAnmChrEdit)
+                {
+                    SpatkActionChunk chunk = ((StructEntry<SpatkActionChunk>)subEntries[i]).data;
+                    int anmchrIndex = anmChrIndexOffsets[chunk.actionClass] + chunk.actionIndex;
+                    if (chunk.actionClass != -1 && chunk.actionIndex != -1) {
+                        nameSB.Append(" = anmchr - " + anmchrIndex.ToString("X") + "h");
+                    }
+                    else
+                    {
+                    }
                 }
             }
         }

@@ -7,26 +7,8 @@ namespace MarvelData
 {
     public class CmdSpAtkEntry : MultiStructEntry
     {
-        public int anmChrIndexMaybe;
         private StructEntry<SpatkHeaderChunk> header;
-        public static int[] anmChrIndexOffsets = {
-            0, // 0 movement
-            -1, // 1 blocking
-            -1,
-            -1,
-            -1,
-            -1,
-            0x96, // normals?
-            0xAA, // airdashes?
-            0xBE, // 8 specials
-            0xDC, //9 supers
-            0xF0, // 10 ?? dormamu air spell charge
-            -1,
-            -1,
-            -1,
-            -1,
-            0x17C, // 15, flight
-        };
+
 
         public override bool isAnmChrEdit { get; internal set; }
 
@@ -119,7 +101,12 @@ namespace MarvelData
                 nameSB.Append((getSpatkHeader().data.disable).ToString().ToUpperInvariant());
                 nameSB.Append(" ");
             }
-            nameSB.Append(getSpatkHeader().data.positionState);
+            if (getSpatkHeader().data.cancelHierarchy == Hierarchy.DHC){
+                nameSB.Append("DHC");
+            }
+            else {
+                nameSB.Append(getSpatkHeader().data.positionState);
+            }
             nameSB.Append(" ");
 
             if (getSpatkHeader().data.meterRequirement > 0)
@@ -130,19 +117,14 @@ namespace MarvelData
 
             SubNameLoop();
 
-
-            if (!getSpatkHeader().data.comboState.Equals(null) && !getSpatkHeader().data.comboState.Equals("Ukn3"))
-            {
-                nameSB.Append(" in " + getSpatkHeader().data.comboState);
-            }
-
+            /* Old method, now merged in to MultiStruct format
             if (anmChrIndexMaybe > 0 && !isAnmChrEdit)
             {
-                nameSB.Append("...anmchr => ");
+                nameSB.Append(" anmchr - ");
                 nameSB.Append(anmChrIndexMaybe.ToString("X"));
-                nameSB.Append("?");
-            }
+            }*/
 
+            /*
             if (anmChrIndexMaybe == 0 && !isAnmChrEdit)
             {
                 if (nameSB.ToString().Contains("Ground S "))
@@ -158,8 +140,9 @@ namespace MarvelData
                 {
                     nameSB.Append("...anmchr => 16C?");
                 }
+            
             }
-
+            */
             // finish up
             if (nameSB.Length > 0)
             {

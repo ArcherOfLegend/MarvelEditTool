@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Xml.Linq;
 using System.Windows.Media.TextFormatting;
+using System.Resources;
 
 namespace MarvelData {
 
@@ -2693,6 +2694,11 @@ namespace MarvelData {
             TACHorizontal = 60,
             TACDown = 61,
             AlphaCounter03 = 64,
+            CharClass1 = 1000,
+            CharClass2 = 1001,
+            CharClass3 = 1002,
+            CharClass4 = 1003,
+            CharClass5 = 1004,
             FilmStrip = 1005,
             Unique = 1006
         }
@@ -2709,7 +2715,7 @@ namespace MarvelData {
             light = 0,
             medium = 1,
             heavy = 2,
-            noPushBlock
+            noPushBlock = 3
         }
 
         [Flags]
@@ -2838,20 +2844,20 @@ namespace MarvelData {
     }
     [Flags]
     public enum AirGroundState : uint
-    { //Flags are reversed maybe?
+    { //Flags are reversed?
         None = 0,
-        Unk0x01 = 0x00000001,
+        Ground = 0x00000001,
         Crouching = 0x00000002,
         Unk0x04 = 0x00000004,
-        Unk0x08 = 0x00000008,
-        Unk0x10 = 0x00000010,
-        Unk0x20 = 0x00000020,
-        Unk0x40 = 0x00000040,
-        Unk0x80 = 0x00000080,
-        Unk0x0100 = 0x00000100,
-        Unk0x0200 = 0x00000200,
-        Unk0x0400 = 0x00000400,
-        Unk0x0800 = 0x00000800,
+        Jump = 0x00000008,
+        SuperJump = 0x00000010,
+        Airborne = 0x00000020,
+        Forward = 0x00000040,
+        Walljump = 0x00000080,
+        Special = 0x00000100,
+        Super = 0x00000200,
+        TurnAroundUnk = 0x00000400,
+        NoCancel = 0x00000800,
         Unk0x1000 = 0x00001000,
         Unk0x2000 = 0x00002000,
         Blocking = 0x00004000,
@@ -2861,13 +2867,13 @@ namespace MarvelData {
         Unk0x40000 = 0x00040000,
         Unk0x80000 = 0x00080000,
         Unk0x100000 = 0x00100000,
-        Unk0x200000 = 0x00200000,
+        Damage = 0x00200000,
         Unk0x400000 = 0x00400000,
         Unk0x800000 = 0x00800000,
-        Unk0x01000000 = 0x01000000,
+        Knockdown = 0x01000000,
         Unk0x02000000 = 0x02000000,
-        Unk0x04000000 = 0x04000000,
-        Unk0x08000000 = 0x08000000,
+        Assist = 0x04000000,
+        TAC = 0x08000000,
         Unk0x10000000 = 0x10000000,
         Unk0x20000000 = 0x20000000,
         Unk0x40000000 = 0x40000000,
@@ -2899,7 +2905,7 @@ namespace MarvelData {
             public int windowStart;
             public int windowEnd;
             public int delay;
-            public int anmChrAction;
+            public int anmChrAction1;
             public int anmChrAction2;
             public int anmChrAction3;
             public int anmChrAction4;
@@ -2909,7 +2915,15 @@ namespace MarvelData {
             public int anmChrAction8;
             public int unk40;
         }
-
+        public enum Hierarchy
+        {
+        Neutral = 0,
+        Special = 1,
+        SpecialPlus = 2,
+        Super = 3,
+        DHC = 4,
+        Launcher = 5,
+        }
         [StructLayout(LayoutKind.Sequential)]
         public struct SpatkHeaderChunk
         {
@@ -2918,7 +2932,7 @@ namespace MarvelData {
             public int unk08;
             public float meterRequirement;
             public SpatkDisabled disable;
-            public int cancelHierarchyThresh;
+            public Hierarchy cancelHierarchy;
             public PositionState positionState;
             public ComboState comboState;
             public cmdFlags flags;
@@ -3602,9 +3616,10 @@ namespace MarvelData {
         Whiff = 2,
         OnHit = 16,
         OnBlock = 64,
-        Blocking = 4096
-    }
+        Blocking = 4096,
+        Walljump = 8388608,
 
+    }
 
     public enum SpecialProperties
         {
@@ -4001,8 +4016,20 @@ namespace MarvelData {
             public int unk18;
             public int unk1C;
         }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SpatkUnk // 5D
+    {
+        public SubChunkType subChunkType; //5D
+        public int unk04;
+        public int unk08;
+        public int unk0C;
+        public int unk10;
+        public int unk14;
+        public int unk18;
+        public int unk1C;
+    }
 
-        [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential)]
         public struct SpatkUnkChunk // ??
         {
             public SubChunkType subChunkType; //??
@@ -4014,26 +4041,26 @@ namespace MarvelData {
             public int unk18;
             public int unk1C;
         }
-
+    [Flags]
     public enum AnmFlagsA : uint // Flags for 1_3C/1_3D
     {
         None = 0,
         Unk0x01 = 0x00000001,
-        InvisUnk = 0x00000002,
-        InvincUnk = 0x00000004,
+        Invisibility = 0x00000002,
+        Invincibility = 0x00000004,
         Unk0x08 = 0x00000008,
         Unk0x10 = 0x00000010,
-        Unk0x20 = 0x00000020,
+        Invincibility2 = 0x00000020,
         Unk0x40 = 0x00000040,
         Unk0x80 = 0x00000080,
-        Unk0x0100 = 0x00000100,
+        NoSpecialHyperCancel = 0x00000100,
         Unk0x0200 = 0x00000200,
         Unk0x0400 = 0x00000400,
-        Unk0x0800 = 0x00000800,
+        NoCollision = 0x00000800,
         Unk0x1000 = 0x00001000,
-        Unk0x2000 = 0x00002000,
+        NoStageCollision = 0x00002000,
         Unk0x4000 = 0x00004000,
-        Unk0x8000 = 0x00008000,
+        DisableInput = 0x00008000,
         Unk0x10000 = 0x00010000,
         Unk0x20000 = 0x00020000,
         Unk0x40000 = 0x00040000,
@@ -4042,14 +4069,22 @@ namespace MarvelData {
         Unk0x200000 = 0x00200000,
         Unk0x400000 = 0x00400000,
         Unk0x800000 = 0x00800000,
-        Unkx01000000 = 0x01000000,
-        Unk0x02000000 = 0x02000000,
-        Unk0x04000000 = 0x04000000,
+        NoTAC = 0x01000000,
+        DisableCancel = 0x02000000,
+        NoCameraTracking = 0x04000000,
         Unk0x08000000 = 0x08000000,
         Unk0x10000000 = 0x10000000,
         Unk0x20000000 = 0x20000000,
         Unk0x40000000 = 0x40000000,
         Unk0x80000000 = 0x80000000
+    }
+    public enum Condition : uint {
+    LessThan = 0x00,
+    LessOrEqualTo = 0x01,
+    EqualTo = 0x02,
+    NotEqualTo = 0x03,
+    GreaterOrEqualThan = 0x04,
+    GreaterThan = 0x05
     }
 
     public enum EnumUnk : uint
@@ -4092,85 +4127,87 @@ namespace MarvelData {
 
         public enum SubChunkType : uint
         {
-            [Description("0 None")]
-            none_0 = 0,
-            [Description("1 unk1")]
-            unk1_1 = 01,
-            [Description("2 Standard Input")]
-            standardInput_2 = 02,
-            [Description("3 Dash Direction Input")]
-            dashDirectionInput_3 = 03,
-            [Description("4 Two Button Input")]
-            twoButtonInput1_4 = 04,
-            [Description("5 Direction and Button Input")]
-            directionAndButtonInput = 05,
-            [Description("6 unk6")]
-            unk6_6 = 06,
-            [Description("7 Two Button Input")]
-            twoButtonInput2_7 = 07,
-            [Description("9 Execute Action")]
-            executeAction_9 = 09,
-            [Description("10 Capture State")]
-            captureState_10 = 10, //0A
-            [Description("11 State Restriction")]
-            AirGroundStateRestriction_11 = 11, //0B
-            [Description("13 Simple Mode Air Combo Unk")]
-            simpleModeAirComboUnk_13 = 13, //0D
-            [Description("23 Character Class Required")]
-            CharacterClassRequired_23 = 23, //17
-            [Description("24 Character Class Restriction")]
-            CharacterClassRestricted_24 = 24, //18
-            [Description("25 VergilBlisteringSwords")]
-            vergilChunk_25 = 25, //19
-            [Description("26 Taskmaster Air Arrows Unk")]
-            taskmasterFlags_26 = 26, //1A
-            [Description("30 Install Requirement")]
-            InstallRequired_30 = 30, //1E
-            [Description("33 TAC Unk")]
-            TACUnk_33 = 33, //21
-            [Description("34 Character Class Specific")]
-            CharacterClass_34 = 34, //22
-            [Description("35 TAC/DHC Action")]
-            TACDHCAction_35 = 35, //23
-            [Description("37 Super Jump Action")]
-            superJumpAction_37 = 37, //25
-            [Description("38 Snap Back Character")]
-            snapBackChar_38 = 38, //26
-            [Description("41 Easy Mode Unk?")]
-            easyModeUnk_41 = 41, //29
-            [Description("47 Install Restricted")]
-            InstallRestricted_47 = 47, //2F
-            [Description("48 S Unk")]
-            SUnk_48 = 48, //30
-            [Description("49 Prohibited Follow Up Action")]
-            prohibitedFollowUpAction_49 = 49, //31
-            [Description("50 Height Restriction")]
-            heightRestriction_50 = 50, //32
-            [Description("51 Maximum Height Restriction")]
-            MaximumHeightRestriction_51 = 51, //32
-            [Description("52 Air Dash")]
-            airDash_52 = 52, //34
-            [Description("53 Air Special Action Limit")]
-            airSpecialActionLimit_53 = 53, //35
-            [Description("56 Guard TAC Action")]
-            guardTACAction_56 = 56, //38
-            [Description("58 Hypers")]
-            hypers_58 = 58, //3A
-            [Description("60 Unk3C")]
-            unk3C_60 = 60, //3C
-            [Description("61 Unk3D")]
-            unk3D_61 = 61, //3D
-            [Description("63 Allowed Chain Canceling State")]
-            allowedChainCancelingState_63 = 63, //3F
-            [Description("73 Advancing Guard Unk")]
-            advGuardUnk_73 = 73, //49
-            [Description("85 Haggar Flags Unk")]
-            haggarFlags_85 = 85, //55
-            [Description("90 Whiff Cancel Unk")]
-            whiffCancelUnk_90 = 90,
-            [Description("91 Is Prop Active")]
-            hasPropActive_91 = 91,
-        }
+        [Description("0 None")]
+        none_0 = 0,
+        [Description("1 unk1")]
+        unk1_1 = 01,
+        [Description("2 Standard Input")]
+        standardInput_2 = 02,
+        [Description("3 Dash Direction Input")]
+        dashDirectionInput_3 = 03,
+        [Description("4 Two Button Input")]
+        twoButtonInput1_4 = 04,
+        [Description("5 Direction and Button Input")]
+        directionAndButtonInput = 05,
+        [Description("6 unk6")]
+        unk6_6 = 06,
+        [Description("7 Two Button Input")]
+        twoButtonInput2_7 = 07,
+        [Description("9 Execute Action")]
+        executeAction_9 = 09,
+        [Description("10 Capture State")]
+        captureState_10 = 10, //0A
+        [Description("11 State Restriction")]
+        AirGroundStateRestriction_11 = 11, //0B
+        [Description("13 Simple Mode Air Combo Unk")]
+        simpleModeAirComboUnk_13 = 13, //0D
+        [Description("23 Character Class Required")]
+        CharacterClassRequired_23 = 23, //17
+        [Description("24 Character Class Restriction")]
+        CharacterClassRestricted_24 = 24, //18
+        [Description("25 VergilBlisteringSwords")]
+        vergilChunk_25 = 25, //19
+        [Description("26 Taskmaster Air Arrows Unk")]
+        taskmasterFlags_26 = 26, //1A
+        [Description("30 Install Requirement")]
+        InstallRequired_30 = 30, //1E
+        [Description("33 TAC Unk")]
+        TACUnk_33 = 33, //21
+        [Description("34 Character Class Specific")]
+        CharacterClass_34 = 34, //22
+        [Description("35 TAC/DHC Action")]
+        TACDHCAction_35 = 35, //23
+        [Description("37 Super Jump Action")]
+        superJumpAction_37 = 37, //25
+        [Description("38 Snap Back Character")]
+        snapBackChar_38 = 38, //26
+        [Description("41 Easy Mode Unk?")]
+        easyModeUnk_41 = 41, //29
+        [Description("47 Install Restricted")]
+        InstallRestricted_47 = 47, //2F
+        [Description("48 S Unk")]
+        SUnk_48 = 48, //30
+        [Description("49 Prohibited Follow Up Action")]
+        prohibitedFollowUpAction_49 = 49, //31
+        [Description("50 Height Restriction")]
+        heightRestriction_50 = 50, //32
+        [Description("51 Maximum Height Restriction")]
+        MaximumHeightRestriction_51 = 51, //32
+        [Description("52 Air Dash")]
+        airDash_52 = 52, //34
+        [Description("53 Air Special Action Limit")]
+        airSpecialActionLimit_53 = 53, //35
+        [Description("56 Guard TAC Action")]
+        guardTACAction_56 = 56, //38
+        [Description("58 Hypers")]
+        hypers_58 = 58, //3A
+        [Description("60 Unk3C")]
+        unk3C_60 = 60, //3C
+        [Description("61 Unk3D")]
+        unk3D_61 = 61, //3D
+        [Description("63 Allowed Chain Canceling State")]
+        allowedChainCancelingState_63 = 63, //3F
+        [Description("73 Advancing Guard Unk")]
+        advGuardUnk_73 = 73, //49
+        [Description("85 Haggar Flags Unk")]
+        haggarFlags_85 = 85, //55
+        [Description("90 Whiff Cancel Unk")]
+        whiffCancelUnk_90 = 90,
+        [Description("91 Is Prop Active")]
+        hasPropActive_91 = 91,
+        [Description("93")]
+            unk5B_93 = 93,
+    }
 
 
         public class MVC3DataStructures
@@ -4276,6 +4313,8 @@ namespace MarvelData {
             typeof(SpatkUnkChunk), // 00                  [89]
             typeof(SpatkWhiffCancelUnk), // 5A            [90]
             typeof(SpatkHasPropActive), // 00             [91]
+            typeof(SpatkUnkChunk), // 00                  [92]
+            typeof(SpatkUnkChunk), // 00                  [93]
 
         }; // if it's past the end of this list, it'll default to SpatkUnkChunk
         }

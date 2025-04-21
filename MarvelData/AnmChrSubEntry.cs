@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -320,6 +321,7 @@ namespace MarvelData
 
         private String UpdateCmdNameByContent(string cmdName, byte[] subsubEntry) 
         {
+            //Float
             if (cmdName.Contains("1_DB Add/Subtract Meter"))
             {
                 byte[] last4Bytes = new byte[4];
@@ -335,22 +337,44 @@ namespace MarvelData
                     return "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
                 }
             }
-            
-            
-            /*else if (cmdName.Contains("1_3C") || cmdName.Contains("1_3D"))
+
+            //Enums
+
+            //AirGroundState
+            else if (cmdName.Contains("1_2F") || cmdName.Contains("1_30") || cmdName.Contains("1_31") || cmdName.Contains("1_32") || cmdName.Contains("1_33") || cmdName.Contains("1_34"))
             {
                 string commandName = "";
-                if (cmdName.Contains("1_3C start state/start invincibility")) {
-                    commandName = "1_3C start state";
+                if (cmdName.Contains("1_2F "))
+                {
+                    commandName = "1_2F Enable Air/Ground State";
                 }
-                else if (cmdName.Contains("1_3D end state/end invincibility")) {
-                    commandName = "1_3C end state";
+                else if (cmdName.Contains("1_30 "))
+                {
+                    commandName = "1_30 Enable Air/Ground State";
+                }
+                else if (cmdName.Contains("1_31 "))
+                {
+                    commandName = "1_31 Disable Air/Ground State";
+                }
+                else if (cmdName.Contains("1_32 "))
+                {
+                    commandName = "1_32 Disable Air/Ground State";
+                }
+                else if (cmdName.Contains("1_33 "))
+                {
+                    commandName = "1_33 Check Air/Ground State";
+                }
+                else if (cmdName.Contains("1_34 "))
+                {
+                    commandName = "1_34 Check Air/Ground State";
                 }
                 byte[] last4Bytes = new byte[4];
                 Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
-                string flagNames = Enum.GetNames(typeof(AnmFlagsA)).ToString();
-                //flagType = Tools.MVCHexToDecimal(BitConverter.ToString(last4Bytes).Replace("-", ""));
+                AirGroundState flags = (AirGroundState)BitConverter.ToUInt32(last4Bytes, 0);
+                string flagNames = flags.ToString("F");
+
                 int flagType = 0;
+
                 if (flagType >= 0)
                 {
                     return commandName + " (" + flagNames + ")";
@@ -359,9 +383,98 @@ namespace MarvelData
                 {
                     return commandName + " (" + flagNames + ")";
                 }
-            }*/
-            
-            
+            }
+
+            //FlagsA
+            else if (cmdName.Contains("1_3B") || cmdName.Contains("1_3C") || cmdName.Contains("1_3D") || cmdName.Contains("1_3E") || cmdName.Contains("1_3F") || cmdName.Contains("1_40"))
+            {
+                string commandName = "";
+                if (cmdName.Contains("1_3B ")) {
+                    commandName = "1_3B Start State";
+                }
+                else if (cmdName.Contains("1_3C "))
+                {
+                    commandName = "1_3C Start State";
+                }
+                else if (cmdName.Contains("1_3D "))
+                {
+                    commandName = "1_3D End State";
+                }
+                else if (cmdName.Contains("1_3E "))
+                {
+                    commandName = "1_3E End State";
+                }
+                else if (cmdName.Contains("1_3F "))
+                {
+                    commandName = "1_3F Check Enabled State";
+                }
+                else if (cmdName.Contains("1_40 "))
+                {
+                    commandName = "1_40 Check Disabled State";
+                }
+                byte[] last4Bytes = new byte[4];
+                Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
+                AnmFlagsA flags = (AnmFlagsA)BitConverter.ToUInt32(last4Bytes, 0);
+                string flagNames = flags.ToString("F");
+
+                int flagType = 0;
+                
+                if (flagType >= 0)
+                {
+                    return commandName + " (" + flagNames + ")";
+                }
+                else
+                {
+                    return commandName + " (" + flagNames + ")";
+                }
+            }
+
+
+
+            //GotoIf
+            if (cmdName.Contains("0_01 ") || cmdName.Contains("0_02 ") || cmdName.Contains("0_04 "))
+            {
+                byte[] V1 = new byte[4];
+                byte[] V2 = new byte[4];
+                byte[] V3 = new byte[4];
+                Array.Copy(subsubEntry, subsubEntry.Length - 12, V1, 0, 4);
+                Array.Copy(subsubEntry, subsubEntry.Length - 8, V2, 0, 4);
+                Array.Copy(subsubEntry, subsubEntry.Length - 4, V3, 0, 4);
+                Condition flags = (Condition)BitConverter.ToUInt32(V2, 0);
+                string condition = flags.ToString("F");
+
+
+
+                if (cmdName.Contains("0_04 "))
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
+                    string Var2 = BitConverter.ToSingle(V1, 0).ToString();
+                    return "0_04 Goto Frame " + GoTo + " If " + condition + " " + Var2 + " Frames";
+                }
+                else if (cmdName.Contains("0_01 "))
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
+                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
+                    return "0_01 GoTo Anmchr " + GoTo + "h If " + condition + " " + vInt;
+                }
+                else if (cmdName.Contains("0_02 "))
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
+                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
+                    return "0_02 GoTo Frame " + GoTo + " If " + condition + " " + vInt;
+                }
+                /* crashes when i do this? idk
+                else if (cmdName.Contains("0_1C "))
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
+                    return "0_1C GoTo Frame " + GoTo;
+                }
+                */
+
+
+                else { return ""; }
+            }
+
             else
             {
 

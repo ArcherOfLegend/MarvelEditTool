@@ -1454,6 +1454,10 @@ namespace StatusEditor
                 AddTags(typeof(CancelFlags), true);
             else if (tag.Contains("weaponID"))
                 AddTags(typeof(WeaponID), true);
+            else if (tag.Contains("cancelHierarchy"))
+                AddTags(typeof(Hierarchy), false);
+            else if (tag.Contains("effectType"))
+                AddTags(typeof(EffectDirection), true);
 
             else
             {

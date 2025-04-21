@@ -1160,7 +1160,7 @@ namespace MarvelData
                                 string ati = dataString.Substring(dataString.Count() - 16, 2);
                                 string cli = dataString.Substring(dataString.Count() - 8, 2);
 
-                                table[infoRef].name += " ATI=>" + ati + "? CLI=>" + cli + "?";
+                                table[infoRef].name += ", ATI=>" + ati + " CLI=>" + cli ;
                             }
                             if (subEntries[l].GetCommandList().ToArray()[m].Contains("0_0C")
                                 && subEntries[l].localindex <= ((AnmChrEntry)table[i]).animTime
