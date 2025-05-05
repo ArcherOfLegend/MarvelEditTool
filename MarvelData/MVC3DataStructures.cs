@@ -2853,13 +2853,13 @@ namespace MarvelData {
         SuperJump = 0x00000010,
         Airborne = 0x00000020,
         Forward = 0x00000040,
-        Walljump = 0x00000080,
-        Special = 0x00000100,
-        Super = 0x00000200,
+        Backwards = 0x00000080,
+        Dashing = 0x00000100,
+        Unk0x200 = 0x00000200,
         TurnAroundUnk = 0x00000400,
         NoCancel = 0x00000800,
-        Unk0x1000 = 0x00001000,
-        Unk0x2000 = 0x00002000,
+        Special = 0x00001000,
+        Super = 0x00002000,
         Blocking = 0x00004000,
         Unk0x8000 = 0x00008000,
         Unk0x10000 = 0x00010000,
@@ -3546,8 +3546,8 @@ namespace MarvelData {
         Bone254 = 254,
         Origin = 255
     }
-    public enum WeaponID : uint { 
-    None = 4294967295,
+    public enum WeaponID : int { 
+    None = -1,
     Weapon0 = 0x00,
     Weapon1 = 0x01,
     Weapon2 = 0x02,
@@ -3558,18 +3558,18 @@ namespace MarvelData {
     Weapon7 = 0x07,
     Weapon8 = 0x08,
     Weapon9 = 0x09,
-    Weapon10 = 0x0A,
-    Weapon11 = 0x0B,
-    Weapon12 = 0x0C,
-    Weapon13 = 0x0D,
-    Weapon14 = 0x0E,
-    Weapon15 = 0x0F,
-    Weapon16 = 0x10,
-    Weapon17 = 0x11,
-    Weapon18 = 0x12,
-    Weapon19 = 0x13,
-    Weapon20 = 0x14,
-    Weapon21 = 0x15
+    Weapon0A = 0x0A,
+    Weapon0B = 0x0B,
+    Weapon0C = 0x0C,
+    Weapon0D = 0x0D,
+    Weapon0E = 0x0E,
+    Weapon0F = 0x0F,
+    Weapon10 = 0x10,
+    Weapon11 = 0x11,
+    Weapon12 = 0x12,
+    Weapon13 = 0x13,
+    Weapon14 = 0x14,
+    Weapon15 = 0x15
     }
 
     [Flags]
@@ -3755,7 +3755,7 @@ namespace MarvelData {
     public struct SpatkAirGroundState // 0B
     {
         public SubChunkType subChunkType; //0B
-        public AirGroundState unk04;
+        public AirGroundState AirGroundState;
         public int unk08;
         public int unk0C;
         public int unk10;
@@ -4069,7 +4069,7 @@ namespace MarvelData {
         Unk0x200000 = 0x00200000,
         Unk0x400000 = 0x00400000,
         Unk0x800000 = 0x00800000,
-        NoTAC = 0x01000000,
+        Unk0x01000000 = 0x01000000,
         DisableCancel = 0x02000000,
         NoCameraTracking = 0x04000000,
         Unk0x08000000 = 0x08000000,

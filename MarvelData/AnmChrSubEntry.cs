@@ -293,7 +293,7 @@ namespace MarvelData
         {
             sb.Clear();
             int currentCount = subsubEntries[i].Length;
-            if (currentCount > 4)
+            if (currentCount >= 8)
             {
                 if (cmdNames != null)
                 {
@@ -304,9 +304,22 @@ namespace MarvelData
                     }
                 }
                 
-                //sb.Append("cmd ");
+                // If command isnt labeled in AnmChrCmds
                 sb.Append(subsubEntries[i][0].ToString("X"));
                 sb.Append("_");
+
+                if (subsubEntries[i][7] != 0)
+                {
+                    sb.Append(subsubEntries[i][7].ToString("X"));
+                }
+                if (subsubEntries[i][6] != 0)
+                {
+                    sb.Append(subsubEntries[i][6].ToString("X2"));
+                }
+                if (subsubEntries[i][5] != 0) { 
+                sb.Append(subsubEntries[i][5].ToString("X2"));
+                }
+
                 sb.Append(subsubEntries[i][4].ToString("X2"));
             }
             else
@@ -321,27 +334,144 @@ namespace MarvelData
 
         private String UpdateCmdNameByContent(string cmdName, byte[] subsubEntry) 
         {
-            //Float
-            if (cmdName.Contains("1_DB Add/Subtract Meter"))
+
+
+
+
+            if (cmdName.Contains("0_01 ") || cmdName.Contains("0_02 ") || cmdName.Contains("0_04 ") || cmdName.Contains("0_1C ")) //GotoIf
             {
-                byte[] last4Bytes = new byte[4];
-                int meter = 0;
-                Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
-                meter = Tools.MVCHexToDecimal(BitConverter.ToString(last4Bytes).Replace("-", ""));
-                if (meter >= 0)
+                byte[] V1 = new byte[4];
+                byte[] V2 = new byte[4];
+                byte[] V3 = new byte[4];
+                string condition = "";
+                int subSize = subsubEntry.Length;
+                //Need to get command length to avoid crashes when file too small
+                if (subsubEntry.Length >= 12) {
+                    Array.Copy(subsubEntry, subsubEntry.Length - 12, V1, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, V2, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 4, V3, 0, 4);
+                    Condition flags = (Condition)BitConverter.ToUInt32(V2, 0);
+                    condition = flags.ToString("F");
+
+                }
+
+                if (cmdName.Contains("0_04 ") && subSize == 40)
                 {
-                    return "1_DB add " + meter + " meter (10000 = 1 Meter bar)";
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
+                    string Var2 = BitConverter.ToSingle(V1, 0).ToString();
+                    return "0_04 Goto Frame " + GoTo + " If " + condition + " " + Var2 + " Frames";
+                }
+                else if (cmdName.Contains("0_01 ")&& subSize == 40)
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
+                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
+                    return "0_01 GoTo Anmchr " + GoTo + "h If " + condition + " " + vInt;
+                }
+                else if (cmdName.Contains("0_02 ") && subSize == 40)
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
+                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
+                    return "0_02 GoTo Frame " + GoTo + " If " + condition + " " + vInt;
+                }
+                else if (cmdName.Contains("0_1C ") && subSize == 24)
+                {
+                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
+                    return "0_1C GoTo Frame " + GoTo;
                 }
                 else
                 {
-                    return "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
                 }
             }
 
-            //Enums
+            else if (cmdName.Contains("0_21 ")) //Play Anim
+            {
+                if (subsubEntry.Length == 48) {
+                    string commandName = "0_21 Play Animation";
+                    byte[] lmt = new byte[4];
+                    byte[] anim = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 16, lmt, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 12, anim, 0, 4);
+                    string S1 = BitConverter.ToInt32(lmt, 0).ToString("D");
+                    string S2 = BitConverter.ToInt32(anim, 0).ToString("D");
+                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+            else if (cmdName.Contains("0_22 ")) //Animation Frame Skip
+            {
+                if (subsubEntry.Length == 56)
+                {
+                    string commandName = "0_22 Animation Frame Skip";
+                    byte[] lmt = new byte[4];
+                    byte[] anim = new byte[4];
+                    byte[] skip = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 20, lmt, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 16, anim, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, skip, 0, 4);
+                    string S1 = BitConverter.ToInt32(lmt, 0).ToString("D");
+                    string S2 = BitConverter.ToInt32(anim, 0).ToString("D");
+                    string S3 = BitConverter.ToSingle(skip, 0).ToString();
+                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ", Frame Skip " + S3 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+            else if (cmdName.Contains("0_24 ")) //Animation Frame Skip
+            {
+                if (subsubEntry.Length == 64)
+                {
+                    string commandName = "0_24 Blend Animation";
+                    byte[] condition = new byte[4];
+                    byte[] lmt = new byte[4];
+                    byte[] anim = new byte[4];
+                    byte[] skip = new byte[4];
+                    byte[] blend = new byte[4]; 
+                    Array.Copy(subsubEntry, subsubEntry.Length - 24, condition, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 20, lmt, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 16, anim, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 12, blend, 0, 4);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, skip, 0, 4);
 
-            //AirGroundState
-            else if (cmdName.Contains("1_2F") || cmdName.Contains("1_30") || cmdName.Contains("1_31") || cmdName.Contains("1_32") || cmdName.Contains("1_33") || cmdName.Contains("1_34"))
+                    string S1 = BitConverter.ToInt32(lmt, 0).ToString("D");
+                    string S2 = BitConverter.ToInt32(anim, 0).ToString("D");
+                    string S3 = BitConverter.ToSingle(skip, 0).ToString();
+                    string S4 = BitConverter.ToSingle(blend, 0).ToString("P");
+
+                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ", Blend " + S4 + ", Frame Skip " + S3 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+
+
+
+            else if (cmdName.Contains("0_2B ")) //Screen Shake
+            {
+                if (subsubEntry.Length == 24)
+                {
+                    string commandName = "0_2B Screen Shake ";
+                    byte[] strength = new byte[1];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 4, strength, 0, 1);
+                    string V1 = BitConverter.ToString(strength);
+                    return commandName + "(" + V1 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+
+
+
+            else if (cmdName.Contains("1_2F") || cmdName.Contains("1_30") || cmdName.Contains("1_31") || cmdName.Contains("1_32") || cmdName.Contains("1_33") || cmdName.Contains("1_34"))  //AirGroundState
             {
                 string commandName = "";
                 if (cmdName.Contains("1_2F "))
@@ -368,20 +498,16 @@ namespace MarvelData
                 {
                     commandName = "1_34 Check Air/Ground State";
                 }
+                if (subsubEntry.Length == 24) { 
                 byte[] last4Bytes = new byte[4];
                 Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
                 AirGroundState flags = (AirGroundState)BitConverter.ToUInt32(last4Bytes, 0);
                 string flagNames = flags.ToString("F");
 
-                int flagType = 0;
-
-                if (flagType >= 0)
-                {
                     return commandName + " (" + flagNames + ")";
                 }
-                else
-                {
-                    return commandName + " (" + flagNames + ")";
+                else {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
                 }
             }
 
@@ -389,7 +515,8 @@ namespace MarvelData
             else if (cmdName.Contains("1_3B") || cmdName.Contains("1_3C") || cmdName.Contains("1_3D") || cmdName.Contains("1_3E") || cmdName.Contains("1_3F") || cmdName.Contains("1_40"))
             {
                 string commandName = "";
-                if (cmdName.Contains("1_3B ")) {
+                if (cmdName.Contains("1_3B "))
+                {
                     commandName = "1_3B Start State";
                 }
                 else if (cmdName.Contains("1_3C "))
@@ -412,67 +539,42 @@ namespace MarvelData
                 {
                     commandName = "1_40 Check Disabled State";
                 }
-                byte[] last4Bytes = new byte[4];
+                if (subsubEntry.Length == 24)
+                {
+                    byte[] last4Bytes = new byte[4];
                 Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
                 AnmFlagsA flags = (AnmFlagsA)BitConverter.ToUInt32(last4Bytes, 0);
                 string flagNames = flags.ToString("F");
-
-                int flagType = 0;
-                
-                if (flagType >= 0)
-                {
                     return commandName + " (" + flagNames + ")";
                 }
                 else
                 {
-                    return commandName + " (" + flagNames + ")";
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
                 }
             }
 
-
-
-            //GotoIf
-            if (cmdName.Contains("0_01 ") || cmdName.Contains("0_02 ") || cmdName.Contains("0_04 "))
+            //Float
+            if (cmdName.Contains("1_DB Add/Subtract Meter"))
             {
-                byte[] V1 = new byte[4];
-                byte[] V2 = new byte[4];
-                byte[] V3 = new byte[4];
-                Array.Copy(subsubEntry, subsubEntry.Length - 12, V1, 0, 4);
-                Array.Copy(subsubEntry, subsubEntry.Length - 8, V2, 0, 4);
-                Array.Copy(subsubEntry, subsubEntry.Length - 4, V3, 0, 4);
-                Condition flags = (Condition)BitConverter.ToUInt32(V2, 0);
-                string condition = flags.ToString("F");
-
-
-
-                if (cmdName.Contains("0_04 "))
+                if (subsubEntry.Length == 24)
                 {
-                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
-                    string Var2 = BitConverter.ToSingle(V1, 0).ToString();
-                    return "0_04 Goto Frame " + GoTo + " If " + condition + " " + Var2 + " Frames";
+                    byte[] last4Bytes = new byte[4];
+                    int meter = 0;
+                    Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
+                    meter = Tools.MVCHexToDecimal(BitConverter.ToString(last4Bytes).Replace("-", ""));
+                    if (meter >= 0)
+                    {
+                        return "1_DB add " + meter + " meter (10000 = 1 Meter bar)";
+                    }
+                    else
+                    {
+                        return "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
+                    }
                 }
-                else if (cmdName.Contains("0_01 "))
+                else
                 {
-                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
-                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
-                    return "0_01 GoTo Anmchr " + GoTo + "h If " + condition + " " + vInt;
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
                 }
-                else if (cmdName.Contains("0_02 "))
-                {
-                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
-                    string vInt = BitConverter.ToInt32(V1, 0).ToString();
-                    return "0_02 GoTo Frame " + GoTo + " If " + condition + " " + vInt;
-                }
-                /* crashes when i do this? idk
-                else if (cmdName.Contains("0_1C "))
-                {
-                    string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
-                    return "0_1C GoTo Frame " + GoTo;
-                }
-                */
-
-
-                else { return ""; }
             }
 
             else

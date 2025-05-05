@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Channels;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1441,7 +1442,7 @@ namespace StatusEditor
             else if (tag.Contains("playWhiffSFXOnNormals"))
                 AddTags(typeof(PlayWhiffSFXOnNormals), false);
             else if (tag.Contains("specialProperties"))
-                AddTags(typeof(EnumUnk), true);
+                AddTags(typeof(CLIProperties), true);
             else if (tag.Contains("ScreenShakeOnHit"))
                 AddTags(typeof(ScreenShake), true);
             else if (tag.Contains("CollisionType"))
@@ -1453,11 +1454,13 @@ namespace StatusEditor
             else if (tag.Contains("cancelFlags"))
                 AddTags(typeof(CancelFlags), true);
             else if (tag.Contains("weaponID"))
-                AddTags(typeof(WeaponID), true);
+                AddTags(typeof(WeaponID), false);
             else if (tag.Contains("cancelHierarchy"))
                 AddTags(typeof(Hierarchy), false);
             else if (tag.Contains("effectType"))
                 AddTags(typeof(EffectDirection), true);
+            else if (tag.Contains("AirGroundState"))
+                AddTags(typeof(AirGroundState), true);
 
             else
             {

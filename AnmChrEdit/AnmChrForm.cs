@@ -1372,7 +1372,7 @@ namespace AnmChrEdit
                     return;
                 }
 
-                if (MessageBox.Show(this, "Deleting command [" + (commandsBox.SelectedItem.ToString().Length <= 4 ?
+                if (MessageBox.Show(this, "Deleting command [" + (commandsBox.SelectedItem.ToString().Length <= 8 ?
                     commandsBox.SelectedItem.ToString() : commandsBox.SelectedItem.ToString().Substring(0, commandsBox.SelectedItem.ToString()
                     .IndexOf(" "))) + (commandBlockEntry.isDisabled ? "] that belongs to a disabled block" :
                     ("] with timestamp " + commandBlockEntry.localindex.ToString())) + ". Are you sure?"
