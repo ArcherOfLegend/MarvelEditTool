@@ -1174,6 +1174,13 @@ namespace MarvelData
                             {
                                 table[infoRef].name = "Shot " + table[infoRef].name;
                             }
+                            if (subEntries[l].GetCommandList().ToArray()[m].Contains("Debug")
+                                && subEntries[l].localindex <= ((AnmChrEntry)table[i]).animTime
+                                )
+                            {
+                                table[infoRef].name = "Debug " + table[infoRef].name;
+                            }
+
                         }
                     }
                 }

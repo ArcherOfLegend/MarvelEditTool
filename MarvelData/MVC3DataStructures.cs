@@ -4086,6 +4086,12 @@ namespace MarvelData {
     GreaterOrEqualThan = 0x04,
     GreaterThan = 0x05
     }
+    public enum SpawnRelation : uint
+    {
+    Stage = 0x00,
+    Self = 0x01,
+    Opponent = 0x02
+    }
 
     public enum EnumUnk : uint
         {

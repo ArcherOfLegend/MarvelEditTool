@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using static System.Windows.Forms.AxHost;
@@ -331,15 +333,17 @@ namespace MarvelData
             }
             return sb.ToString();
         }
-
         private String UpdateCmdNameByContent(string cmdName, byte[] subsubEntry) 
         {
-
-
-
+            bool IsDebug = false;
+            if (cmdName.ToUpper().Contains("DEBUG")) {
+                IsDebug = true;
+            }
+            string newName = "";
 
             if (cmdName.Contains("0_01 ") || cmdName.Contains("0_02 ") || cmdName.Contains("0_04 ") || cmdName.Contains("0_1C ")) //GotoIf
             {
+                
                 byte[] V1 = new byte[4];
                 byte[] V2 = new byte[4];
                 byte[] V3 = new byte[4];
@@ -359,24 +363,32 @@ namespace MarvelData
                 {
                     string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
                     string Var2 = BitConverter.ToSingle(V1, 0).ToString();
-                    return "0_04 Goto Frame " + GoTo + " If " + condition + " " + Var2 + " Frames";
+                    if (IsDebug) { newName = "Debug "; }
+                    newName = newName + "0_04 Goto Frame " + GoTo + " If " + condition + " " + Var2 + " Frames";
+                    return newName;
                 }
                 else if (cmdName.Contains("0_01 ")&& subSize == 40)
                 {
                     string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
                     string vInt = BitConverter.ToInt32(V1, 0).ToString();
-                    return "0_01 GoTo Anmchr " + GoTo + "h If " + condition + " " + vInt;
+                    if (IsDebug) { newName = "Debug "; }
+                    newName = newName + "0_01 GoTo Anmchr " + GoTo + "h If " + condition + " " + vInt;
+                    return newName;
                 }
                 else if (cmdName.Contains("0_02 ") && subSize == 40)
                 {
                     string GoTo = BitConverter.ToInt32(V3, 0).ToString("D");
                     string vInt = BitConverter.ToInt32(V1, 0).ToString();
-                    return "0_02 GoTo Frame " + GoTo + " If " + condition + " " + vInt;
+                    if (IsDebug) { newName = "Debug "; }
+                    newName = newName + "0_02 GoTo Frame " + GoTo + " If " + condition + " " + vInt;
+                    return newName;
                 }
                 else if (cmdName.Contains("0_1C ") && subSize == 24)
                 {
                     string GoTo = BitConverter.ToInt32(V3, 0).ToString("X");
-                    return "0_1C GoTo Frame " + GoTo;
+                    if (IsDebug) { newName = "Debug "; }
+                    newName = newName + "0_1C GoTo Frame " + GoTo;
+                    return newName;
                 }
                 else
                 {
@@ -394,7 +406,8 @@ namespace MarvelData
                     Array.Copy(subsubEntry, subsubEntry.Length - 12, anim, 0, 4);
                     string S1 = BitConverter.ToInt32(lmt, 0).ToString("D");
                     string S2 = BitConverter.ToInt32(anim, 0).ToString("D");
-                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ")";
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + " (LMT " + S1 + ", Anim " + S2 + ")";
                 }
                 else
                 {
@@ -415,7 +428,8 @@ namespace MarvelData
                     string S1 = BitConverter.ToInt32(lmt, 0).ToString("D");
                     string S2 = BitConverter.ToInt32(anim, 0).ToString("D");
                     string S3 = BitConverter.ToSingle(skip, 0).ToString();
-                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ", Frame Skip " + S3 + ")";
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + " (LMT " + S1 + ", Anim " + S2 + ", Frame Skip " + S3 + ")";
                 }
                 else
                 {
@@ -443,7 +457,8 @@ namespace MarvelData
                     string S3 = BitConverter.ToSingle(skip, 0).ToString();
                     string S4 = BitConverter.ToSingle(blend, 0).ToString("P");
 
-                    return commandName + " (LMT " + S1 + ", Anim " + S2 + ", Blend " + S4 + ", Frame Skip " + S3 + ")";
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + " (LMT " + S1 + ", Anim " + S2 + ", Blend " + S4 + ", Frame Skip " + S3 + ")";
                 }
                 else
                 {
@@ -461,7 +476,8 @@ namespace MarvelData
                     byte[] strength = new byte[1];
                     Array.Copy(subsubEntry, subsubEntry.Length - 4, strength, 0, 1);
                     string V1 = BitConverter.ToString(strength);
-                    return commandName + "(" + V1 + ")";
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + "(" + V1 + ")";
                 }
                 else
                 {
@@ -504,7 +520,8 @@ namespace MarvelData
                 AirGroundState flags = (AirGroundState)BitConverter.ToUInt32(last4Bytes, 0);
                 string flagNames = flags.ToString("F");
 
-                    return commandName + " (" + flagNames + ")";
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + " (" + flagNames + ")";
                 }
                 else {
                     return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
@@ -542,10 +559,11 @@ namespace MarvelData
                 if (subsubEntry.Length == 24)
                 {
                     byte[] last4Bytes = new byte[4];
-                Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
-                AnmFlagsA flags = (AnmFlagsA)BitConverter.ToUInt32(last4Bytes, 0);
-                string flagNames = flags.ToString("F");
-                    return commandName + " (" + flagNames + ")";
+                    Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
+                    AnmFlagsA flags = (AnmFlagsA)BitConverter.ToUInt32(last4Bytes, 0);
+                    string flagNames = flags.ToString("F");
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + " (" + flagNames + ")";
                 }
                 else
                 {
@@ -553,7 +571,6 @@ namespace MarvelData
                 }
             }
 
-            //Float
             if (cmdName.Contains("1_DB Add/Subtract Meter"))
             {
                 if (subsubEntry.Length == 24)
@@ -562,14 +579,181 @@ namespace MarvelData
                     int meter = 0;
                     Array.Copy(subsubEntry, subsubEntry.Length - 4, last4Bytes, 0, 4);
                     meter = Tools.MVCHexToDecimal(BitConverter.ToString(last4Bytes).Replace("-", ""));
+                    if (IsDebug) { newName = "Debug "; }
+                    
                     if (meter >= 0)
                     {
-                        return "1_DB add " + meter + " meter (10000 = 1 Meter bar)";
+                        return newName + "1_DB add " + meter + " meter (10000 = 1 Meter bar)";
                     }
                     else
                     {
-                        return "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
+                        return newName + "1_DB subtract " + meter + " meter (10000 = 1 Meter bar)";
                     }
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+
+            else if (cmdName.Contains("3_30 ")) //Spawn Projectile
+            {
+                if (subsubEntry.Length == 132)
+                {
+                    string commandName = "3_30 Spawn Projectile";
+                    string flags = "";
+                    byte[] pName = new byte[64];
+                    byte[] atiIndex = new byte[4];
+                    byte[] spawnTo = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, atiIndex, 0, 4);
+                    Array.Copy(subsubEntry, 44, pName, 0, 64);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 20, spawnTo, 0, 4);
+
+                    string V1 = Encoding.UTF8.GetString(pName, 0, 64).Replace("\0", "");
+                    string V2 = BitConverter.ToInt32(atiIndex, 0).ToString("D").Replace("-1","Default");
+                    SpawnRelation V3 = (SpawnRelation)BitConverter.ToUInt32(spawnTo, 0);
+                    flags = V3.ToString("F");
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + ": " + V1 + " from " + flags + " (ATI: " + V2 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+            else if (cmdName.Contains("3_31 ")) //Spawn Projectile
+            {
+                if (subsubEntry.Length == 180)
+                {
+                    string commandName = "3_31 Spawn Extra Projectile";
+                    string flags = "";
+                    byte[] pName = new byte[64];
+                    byte[] spawnTo = new byte[4];
+                    byte[] atiIndex = new byte[4];
+                    //Location
+                    byte[] lBone = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 48, lBone, 0, 4);
+                    byte[] lZ = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 44, lZ, 0, 4);
+                    byte[] lY = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 40, lY, 0, 4);
+                    byte[] lX = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 36, lX, 0, 4);
+                    //Rotation
+                    byte[] rBone = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 32, rBone, 0, 4);
+                    byte[] rZ = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 28, rZ, 0, 4);
+                    byte[] rY = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 24, rY, 0, 4);
+                    byte[] rX = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 20, rX, 0, 4);
+
+
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, atiIndex, 0, 4);
+                    Array.Copy(subsubEntry, 60, pName, 0, 64);
+                    Array.Copy(subsubEntry, subsubEntry.Length - 52, spawnTo, 0, 4);
+
+
+
+                    string V1 = Encoding.UTF8.GetString(pName, 0, 64).Replace("\0", "");
+                    string V2 = BitConverter.ToInt32(atiIndex, 0).ToString("D").Replace("-1", "Default");
+                    SpawnRelation V3 = (SpawnRelation)BitConverter.ToUInt32(spawnTo, 0);
+                    flags = V3.ToString("F");
+                    string LB = BitConverter.ToInt32(lBone, 0).ToString("D").Replace("-1","Default");
+
+                    string sLZ = BitConverter.ToSingle(lZ, 0).ToString();
+                    string sLY = BitConverter.ToSingle(lY, 0).ToString();
+                    string sLX = BitConverter.ToSingle(lX, 0).ToString();
+
+                    string RB = BitConverter.ToSingle(rBone, 0).ToString().Replace("NaN","Default");
+
+                    string sRZ = BitConverter.ToSingle(rZ, 0).ToString();
+                    string sRY = BitConverter.ToSingle(rY, 0).ToString();
+                    string sRX = BitConverter.ToSingle(rX, 0).ToString();
+
+
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + ": " + V1 + " from " + flags + " Bone: " + LB + ", (Location Z: " + sLZ + ", Y: " + sLY + ", X: " + sLX + 
+                        "), (Rotation Z: " + sRZ + ", Y: " + sRY + ", X: " + sRX + "), (ATI: " + V2 + ")";
+                }
+                else
+                {
+                    return cmdName + ", Size Error " + subsubEntry.Length.ToString("D");
+                }
+            }
+            else if (cmdName.Contains("3_32 ")) //Spawn Physics Projectile
+            {
+                if (subsubEntry.Length == 212)
+                {
+                    string commandName = "3_32 Spawn Physics Projectile";
+                    string flags = "";
+                    byte[] pName = new byte[64];
+                    Array.Copy(subsubEntry, 76, pName, 0, 64);
+                    byte[] spawnTo = new byte[4];
+                    Array.Copy(subsubEntry, 144, spawnTo, 0, 4);
+                    byte[] atiIndex = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 8, atiIndex, 0, 4);
+
+
+                    //Location
+                    byte[] lBone = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 64, lBone, 0, 4);
+                    byte[] lZ = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 60, lZ, 0, 4);
+                    byte[] lY = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 56, lY, 0, 4);
+                    byte[] lX = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 52, lX, 0, 4);
+                    //Rotation
+                    byte[] rBone = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 48, rBone, 0, 4);
+                    byte[] rZ = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 44, rZ, 0, 4);
+                    byte[] rY = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 40, rY, 0, 4);
+                    byte[] rX = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 36, rX, 0, 4);
+                    //X Physics
+                    byte[] pX = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 32, pX, 0, 4);
+                    byte[] pXa = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 28, pXa, 0, 4);
+                    //Y Physics
+                    byte[] pY = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 24, pY, 0, 4);
+                    byte[] pYa = new byte[4];
+                    Array.Copy(subsubEntry, subsubEntry.Length - 20, pYa, 0, 4);
+
+
+                    string V1 = Encoding.UTF8.GetString(pName, 0, 64).Replace("\0", "");
+                    string V2 = BitConverter.ToInt32(atiIndex, 0).ToString("D").Replace("-1", "Default");
+                    SpawnRelation V3 = (SpawnRelation)BitConverter.ToUInt32(spawnTo, 0);
+                    flags = V3.ToString("F");
+                    string LB = BitConverter.ToInt32(lBone, 0).ToString("D").Replace("-1", "Default");
+
+                    string sLZ = BitConverter.ToSingle(lZ, 0).ToString();
+                    string sLY = BitConverter.ToSingle(lY, 0).ToString();
+                    string sLX = BitConverter.ToSingle(lX, 0).ToString();
+
+                    string RB = BitConverter.ToSingle(rBone, 0).ToString().Replace("NaN", "Default");
+
+                    string sRZ = BitConverter.ToSingle(rZ, 0).ToString();
+                    string sRY = BitConverter.ToSingle(rY, 0).ToString();
+                    string sRX = BitConverter.ToSingle(rX, 0).ToString();
+
+                    string sPX = BitConverter.ToSingle(pX, 0).ToString();
+                    string sPXa = BitConverter.ToSingle(pXa, 0).ToString();
+                    string sPY = BitConverter.ToSingle(pY, 0).ToString();
+                    string sPYa = BitConverter.ToSingle(pYa, 0).ToString();
+
+
+
+                    if (IsDebug) { newName = "Debug "; }
+                    return newName + commandName + ": " + V1 + " from " + flags + " Bone: " + LB + ", (Location Z: " + sLZ + ", Y: " + sLY + ", X: " + sLX +
+                        "), (Rotation Z: " + sRZ + ", Y: " + sRY + ", X: " + sRX + 
+                        "), (Physics X " + sPX + ", " + sPXa + "), (Y: " + sPY + ", " + sPYa + 
+                        "), (ATI: " + V2 + ")";
                 }
                 else
                 {
