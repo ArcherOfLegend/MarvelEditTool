@@ -35,12 +35,22 @@ namespace AnmChrEdit
         public BindingList<string> subDataSource;
         public BindingList<string> subsubDataSource;
         private int subEntryHoveredIndex = -1;
-        private int dataTextBoxFormat;
         private ImageForm imageForm;
         private bool isChecked;
         private bool isBreak;
         public bool isDeleting = false;
         public int reselectID = -1;
+        private BindingList<CommandByteRow> commandDetailRows;
+        private bool isUpdatingCommandDetail;
+        private Panel commandDetailPanel;
+        private Label commandDetailHeaderLabel;
+        private DataGridView commandDetailGrid;
+
+        private class CommandByteRow
+        {
+            public int Index { get; set; }
+            public byte Value { get; set; }
+        }
 
         public ACE()
         {
@@ -54,8 +64,138 @@ namespace AnmChrEdit
             AnmChrSubEntry.InitCmdNames();
             commandBlocksBox.DrawItem += commandBlocksBox_DrawItem;
             commandBlocksBox.DrawMode = DrawMode.OwnerDrawFixed;
-            
+
+            commandDetailRows = new BindingList<CommandByteRow>();
+            SetupModernInterface();
+
     }
+
+        private void SetupModernInterface()
+        {
+            BackColor = Color.FromArgb(28, 28, 28);
+            ForeColor = Color.White;
+
+            tableLayoutPanel1.Controls.Remove(dataTextBox);
+            dataTextBox.Visible = false;
+            dataTextBox.Enabled = false;
+
+            commandDetailPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8),
+                BackColor = Color.FromArgb(36, 36, 36)
+            };
+
+            commandDetailHeaderLabel = new Label
+            {
+                Dock = DockStyle.Top,
+                Height = 48,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = Color.White,
+                Text = "Select a command to view its details."
+            };
+
+            commandDetailGrid = new DataGridView
+            {
+                Dock = DockStyle.Fill,
+                AutoGenerateColumns = false,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                BackgroundColor = Color.FromArgb(32, 32, 32),
+                BorderStyle = BorderStyle.None,
+                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
+                EnableHeadersVisualStyles = false,
+                GridColor = Color.FromArgb(64, 64, 64),
+                RowHeadersVisible = false,
+                SelectionMode = DataGridViewSelectionMode.CellSelect,
+                MultiSelect = false,
+                ReadOnly = false
+            };
+
+            commandDetailGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(45, 45, 45),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+
+            commandDetailGrid.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(40, 40, 40),
+                ForeColor = Color.White,
+                SelectionBackColor = Color.FromArgb(70, 70, 70),
+                SelectionForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F)
+            };
+
+            var indexColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = nameof(CommandByteRow.Index),
+                HeaderText = "Byte",
+                ReadOnly = true,
+                Width = 60
+            };
+
+            var valueColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = nameof(CommandByteRow.Value),
+                HeaderText = "Value",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            };
+
+            commandDetailGrid.Columns.Add(indexColumn);
+            commandDetailGrid.Columns.Add(valueColumn);
+
+            commandDetailGrid.CellValidating += commandDetailGrid_CellValidating;
+            commandDetailGrid.CellValueChanged += commandDetailGrid_CellValueChanged;
+            commandDetailGrid.DataError += commandDetailGrid_DataError;
+
+            commandDetailGrid.DataSource = commandDetailRows;
+
+            commandDetailPanel.Controls.Add(commandDetailGrid);
+            commandDetailPanel.Controls.Add(commandDetailHeaderLabel);
+
+            tableLayoutPanel1.Controls.Add(commandDetailPanel, 0, 6);
+            tableLayoutPanel1.SetColumnSpan(commandDetailPanel, 3);
+            if (tableLayoutPanel1.RowStyles.Count > 6)
+            {
+                tableLayoutPanel1.RowStyles[6] = new RowStyle(SizeType.Percent, 100F);
+            }
+
+            formatUnsetButton.Visible = false;
+            format8HexButton.Visible = false;
+            format16HexButton.Visible = false;
+            formatDisplayToolStripMenuItem.Visible = false;
+
+            Color listBackColor = Color.FromArgb(32, 32, 32);
+            animBox.BackColor = listBackColor;
+            commandBlocksBox.BackColor = listBackColor;
+            commandsBox.BackColor = listBackColor;
+
+            animBox.ForeColor = Color.White;
+            commandBlocksBox.ForeColor = Color.White;
+            commandsBox.ForeColor = Color.White;
+
+            commandBlocksBox.BorderStyle = BorderStyle.FixedSingle;
+            commandsBox.BorderStyle = BorderStyle.FixedSingle;
+            animBox.BorderStyle = BorderStyle.FixedSingle;
+
+            tableLayoutPanel1.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel2.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel3.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel4.BackColor = Color.FromArgb(30, 30, 30);
+
+            splitContainer1.BackColor = Color.FromArgb(25, 25, 25);
+            splitContainer2.BackColor = Color.FromArgb(25, 25, 25);
+            splitContainer4.BackColor = Color.FromArgb(25, 25, 25);
+
+            sizeLabel.ForeColor = Color.WhiteSmoke;
+
+            ClearCommandDetailView();
+            AddReorderOptions();
+        }
 
         public static string GetCompileDate()
         {
@@ -121,30 +261,6 @@ namespace AnmChrEdit
                 if (importButton.Enabled)
                 {
                     importButton_Click(null, null);
-                }
-                return true;
-            }
-            else if (keyData == (Keys.Control | Keys.NumPad0) || keyData == (Keys.Control | Keys.D0))
-            {
-                if (formatUnsetButton.Enabled)
-                {
-                    formatUnsetButton_Click(null, null);
-                }
-                return true;
-            }
-            else if (keyData == (Keys.Control | Keys.NumPad1) || keyData == (Keys.Control | Keys.D1))
-            {
-                if (format8HexButton.Enabled)
-                {
-                    format8HexButton_Click(null, null);
-                }
-                return true;
-            }
-            else if (keyData == (Keys.Control | Keys.NumPad2) || keyData == (Keys.Control | Keys.D2))
-            {
-                if (format16HexButton.Enabled)
-                {
-                    format16HexButton_Click(null, null);
                 }
                 return true;
             }
@@ -267,9 +383,8 @@ namespace AnmChrEdit
                         default:
                             Text = "AnmChrEditor, build " + GetCompileDate();
                             /*filenameLabel.Text = String.Empty;
-                            dataTextBox.Clear();
+                            ClearCommandDetailView();
                             filePath = String.Empty;
-                            SetDataTexBoxFormat(0);
                             AELogger.WriteLog();*/
                             break;
                     }
@@ -282,9 +397,8 @@ namespace AnmChrEdit
                 if (openFile.FileNames.Length > 0)
                 {
                     filenameLabel.Text = String.Empty;
-                    dataTextBox.Clear();
+                    ClearCommandDetailView();
                     filePath = String.Empty;
-                    SetDataTexBoxFormat(0);
                     AELogger.WriteLog();
                     //TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], true, typeof(StructEntry<ATKInfoChunk>), 848, true);
                     TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], false, typeof(AnmChrEntry), -1, true);
@@ -314,13 +428,6 @@ namespace AnmChrEdit
                     exportButton.Enabled = false;
                     animBox.Enabled = true;
                     extendButton.Enabled = true;
-                    formatUnsetButton.Enabled = false;
-                    format8HexButton.Enabled = true;
-                    format16HexButton.Enabled = true;
-                    unsetToolStripMenuItem.Enabled = true;
-                    hex8ToolStripMenuItem.Enabled = true;
-                    hex16ToolStripMenuItem.Enabled = true;
-
 
                     sizeLabel.Text = count + " entries loaded";
                     RefreshData();
@@ -540,32 +647,22 @@ namespace AnmChrEdit
 
         private void formatUnsetButton_Click(object sender, EventArgs e)
         {
-            SetDataTexBoxFormat(0);
-            formatUnsetButton.Enabled = false;
-            format8HexButton.Enabled = true;
-            format16HexButton.Enabled = true;
-            RefreshText();
-            RefreshData();
+            // Legacy handler retained for designer compatibility.
         }
 
         private void format8HexButton_Click(object sender, EventArgs e)
         {
-            SetDataTexBoxFormat(8);
-            formatUnsetButton.Enabled = true;
-            format8HexButton.Enabled = false;
-            format16HexButton.Enabled = true;
-            RefreshText();
-            RefreshData();
+            // Legacy handler retained for designer compatibility.
         }
 
         private void format16HexButton_Click(object sender, EventArgs e)
         {
-            SetDataTexBoxFormat(16);
-            formatUnsetButton.Enabled = true;
-            format8HexButton.Enabled = true;
-            format16HexButton.Enabled = false;
-            RefreshText();
-            RefreshData();
+            // Legacy handler retained for designer compatibility.
+        }
+
+        private void dataTextBox_TextChanged(object sender, EventArgs ev)
+        {
+            // Legacy handler retained for designer compatibility.
         }
 
         private void testImgButton_Click(object sender, EventArgs e)
@@ -607,7 +704,7 @@ namespace AnmChrEdit
             if (tablefile.table[s].bHasData && tablefile.table[s] is AnmChrEntry)
             {
                 AnmChrEntry entry = (AnmChrEntry)tablefile.table[s];
-                dataTextBox.Enabled = true;
+                ClearCommandDetailView();
                 subDataSource = entry.getSubEntryList();
                 commandBlocksBox.DataSource = subDataSource;
                 // total time elements
@@ -633,8 +730,7 @@ namespace AnmChrEdit
             else
             {
                 //subsubEntryBox.BeginUpdate();
-                dataTextBox.Enabled = false;
-                dataTextBox.Clear();
+                ClearCommandDetailView("No animation data available.");
                 exportButton.Enabled = false;
                 // total time elements
                 lengthTextBox.Enabled = false;
@@ -730,7 +826,7 @@ namespace AnmChrEdit
                     {
                         SaveSelectedIndices();
                     }
-                    RefreshText();
+                    RefreshCommandDetails();
                     timeTextBox.Text = entry.subEntries[commandBlocksBox.SelectedIndex].isDisabled ? "" : 
                     entry.subEntries[commandBlocksBox.SelectedIndex].tableindex.ToString();
                     timeTextBox.Enabled = true;
@@ -881,7 +977,7 @@ namespace AnmChrEdit
                 {
                     AELogger.Log("possible big error");
 
-                    RefreshText();
+                    RefreshCommandDetails();
                 }
                 else if (entry.subEntries.Count > 0 && commandBlocksBox.SelectedIndex > 0)
                 {
@@ -890,151 +986,17 @@ namespace AnmChrEdit
                         commandsBox.SelectedIndex = entry.subEntries.Count - 1;
                     }
 
-                    RefreshText();
+                    RefreshCommandDetails();
 
                     SaveSelectedIndices();
                 }
                 else
                 {
-                    RefreshText();
+                    RefreshCommandDetails();
                 }
             }
             bDisableSubSubUpdate = false;
         }
-
-        private void RefreshText()
-        {
-            int s = animBox.SelectedIndex;
-            if (tablefile.table[s] is AnmChrEntry)
-            {
-                AnmChrEntry entry = (AnmChrEntry)tablefile.table[s];
-
-                if (commandBlocksBox.SelectedIndex >= entry.subEntries.Count || commandBlocksBox.SelectedIndex < 0)
-                {
-                    dataTextBox.Enabled = false;
-                    AELogger.Log("weird otherwise probably nonharmful data index error A");
-                    dataTextBox.Text = "no data selected?";
-                    return;
-                }
-                if (commandsBox.SelectedIndex >= entry.subEntries[commandBlocksBox.SelectedIndex].subsubEntries.Count || commandsBox.SelectedIndex < 0)
-                {
-                    AELogger.Log("weird otherwise probably nonharmful data index error B");
-                    dataTextBox.Enabled = false;
-                    dataTextBox.Text = "no data selected?";
-                    return;
-                }
-                byte[] data = entry.subEntries[commandBlocksBox.SelectedIndex].subsubEntries[commandsBox.SelectedIndex];
-                dataTextBox.Enabled = true;
-                dataTextBox.Text = BitConverter.ToString(data).Replace("-", "");
-                dataTextBox.Text = splitAndBreakEveryNChars(dataTextBox.Text, GetDataTextBoxFormat());
-                dataTextBox.ForeColor = Color.White;
-            }
-            else
-            {
-                dataTextBox.Enabled = false;
-                dataTextBox.Clear();
-            }
-        }
-
-        private string splitAndBreakEveryNChars(string text2Break, int breakAfterNChars)
-        {
-            if (breakAfterNChars <= 0)
-            {
-                return (text2Break);
-            }
-
-            return (String.Join("\r\n", text2Break.SplitInParts(breakAfterNChars)));
-        }
-
-        public static byte[] StringToByteArray(string input)
-        {
-            input = input.Replace("  ", "");
-            input = input.Replace(" ", "");
-            int length = input.Length / 2;
-            byte[] outBytes = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                outBytes[i] = Convert.ToByte(input.Substring(i * 2, 2), 16); // base 16
-            }
-            return outBytes;
-        }
-
-        // Validates the contents of the hex in data text box
-        private void dataTextBox_TextChanged(object sender, EventArgs ev)
-        {
-            if (bDisableUpdate || bDisableSubUpdate || bDisableSubSubUpdate)
-            {
-                return;
-            }
-            int s = animBox.SelectedIndex;
-            if (dataTextBox.Text.Length % 2 == 1)
-            {
-                dataTextBox.ForeColor = Color.Red;
-            }
-            else
-            {
-                try
-                {
-                    if (tablefile.table[s] is AnmChrEntry && tablefile.table[s].bHasData)
-                    {
-                        
-                        AnmChrEntry entry = (AnmChrEntry)tablefile.table[s];
-
-                        entry.subEntries[commandBlocksBox.SelectedIndex].subsubEntries[commandsBox.SelectedIndex] 
-                            = StringToByteArray(dataTextBox.Text.Replace("\r\n", ""));
-
-                        bDisableSubSubUpdate = true;
-                        subsubDataSource[commandsBox.SelectedIndex] = entry.subEntries[commandBlocksBox.SelectedIndex]
-                            .GetSubSubName(commandsBox.SelectedIndex);
-                        bDisableSubSubUpdate = false;
-                    }
-                    dataTextBox.ForeColor = Color.White;
-                }
-                catch(Exception e)
-                {
-                    AELogger.Log("Exception: " + e.Message);
-
-                    AELogger.Log("Exception: " + e.StackTrace);
-
-                    int i = 1;
-                    while (e.InnerException != null)
-                    {
-                        e = e.InnerException;
-                        AELogger.Log("InnerException " + i + ": " + e.Message);
-
-                        AELogger.Log("InnerException " + i + ": " + e.StackTrace);
-                        i++;
-                    }
-                    dataTextBox.ForeColor = Color.Red;
-                }
-            }
-        }
-
-        // Creates labels for the sub entries box
-        private void commandBlocksBoxMouseMove(object sender, MouseEventArgs e)
-        {
-            // if still on the same row, do nothing
-            if (!commandBlocksBox.IndexFromPoint(e.Location).Equals(subEntryHoveredIndex))
-            {
-                string strTip = "";
-                int nIdx = commandBlocksBox.IndexFromPoint(e.Location);
-                if ((nIdx >= 0) && (nIdx < commandBlocksBox.Items.Count))
-                {
-                    subEntryHoveredIndex = nIdx;
-                    strTip = commandBlocksBox.Items[nIdx].ToString();
-                    if (tablefile != null && tablefile.table[animBox.SelectedIndex] is AnmChrEntry)
-                    {
-                        AnmChrEntry entry = (AnmChrEntry)tablefile.table[animBox.SelectedIndex];
-                        if (entry.subEntries.Count > 0)
-                        {
-                        entry.subEntries[nIdx].GetCommandList().ToList().ForEach(n => strTip += " \r\n  " + n.ToString());
-                        }
-                    }
-                }
-                toolTip1.SetToolTip(commandBlocksBox, strTip);
-            }
-        }
-
         // Creates labels for the sub sub entries box
         private void OnCommandsBoxMouseMove(object sender, MouseEventArgs e)
         {
@@ -1298,7 +1260,7 @@ namespace AnmChrEdit
                 else
                 {
                     AELogger.Log("odd issue ???????");
-                    dataTextBox.Enabled = false;
+                    ClearCommandDetailView("This animation has no command blocks.");
                 }
 
                 
@@ -1409,72 +1371,289 @@ namespace AnmChrEdit
             }
         }
 
-        // Validates if the command related buttons ought to be enabled or not
-        private void validateDeleteButtons(AnmChrEntry entry)
+        private void RefreshCommandDetails()
         {
-            bool isSubEntries = entry?.subEntries.Count > 0;
-            bool isDisabled;
-            if (commandBlocksBox.SelectedIndex > -1)
+            if (commandDetailGrid == null)
             {
-                isDisabled = (entry?.subEntries[commandBlocksBox.SelectedIndex].isDisabled).Equals(true);
+                return;
+            }
+
+            if (tablefile == null || animBox.SelectedIndex < 0 || !(tablefile.table[animBox.SelectedIndex] is AnmChrEntry entry) || !entry.bHasData)
+            {
+                ClearCommandDetailView("Open a file to view command data.");
+                return;
+            }
+
+            if (isMultiSelection)
+            {
+                ClearCommandDetailView("Command details are unavailable while multiple command blocks are selected.");
+                return;
+            }
+
+            if (commandBlocksBox.SelectedIndex < 0 || commandBlocksBox.SelectedIndex >= entry.subEntries.Count)
+            {
+                ClearCommandDetailView("Select a command block to inspect its commands.");
+                return;
+            }
+
+            var block = entry.subEntries[commandBlocksBox.SelectedIndex];
+            if (commandsBox.SelectedIndex < 0 || commandsBox.SelectedIndex >= block.subsubEntries.Count)
+            {
+                ClearCommandDetailView("Select a command to see its byte values.");
+                return;
+            }
+
+            var data = block.subsubEntries[commandsBox.SelectedIndex];
+            isUpdatingCommandDetail = true;
+            commandDetailRows.Clear();
+            for (int i = 0; i < data.Length; i++)
+            {
+                commandDetailRows.Add(new CommandByteRow { Index = i, Value = data[i] });
+            }
+            isUpdatingCommandDetail = false;
+
+            commandDetailGrid.Enabled = commandDetailRows.Count > 0;
+            commandDetailHeaderLabel.Text = $"{block.GetSubSubName(commandsBox.SelectedIndex)}  •  {data.Length} bytes";
+            sizeLabel.Text = $"Command size: {data.Length} bytes";
+        }
+
+        private void ClearCommandDetailView(string message = "Select a command to view its byte values.")
+        {
+            if (commandDetailRows == null)
+            {
+                return;
+            }
+
+            isUpdatingCommandDetail = true;
+            commandDetailRows.Clear();
+            isUpdatingCommandDetail = false;
+            commandDetailGrid.Enabled = false;
+            commandDetailHeaderLabel.Text = message;
+            if (!string.IsNullOrEmpty(message))
+            {
+                sizeLabel.Text = message;
+            }
+        }
+
+        private void commandDetailGrid_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            if (e.ColumnIndex != 1 || e.RowIndex < 0)
+            {
+                return;
+            }
+
+            var text = e.FormattedValue?.ToString();
+            if (!byte.TryParse(text, out _))
+            {
+                e.Cancel = true;
+                commandDetailGrid.Rows[e.RowIndex].ErrorText = "Enter a value between 0 and 255.";
             }
             else
             {
-                isDisabled = false;
+                commandDetailGrid.Rows[e.RowIndex].ErrorText = string.Empty;
             }
-            commandBlockDeleteButton.Enabled = isSubEntries && !isMultiSelection;
-            deleteCommandBlockToolStripMenuItem1.Enabled = isSubEntries && !isMultiSelection;
-            deleteCommandBlockToolStripMenuItem.Enabled = isSubEntries && !isMultiSelection;
-            commandBlockCopyButton.Enabled = isSubEntries && !isMultiSelection;
-            copyCommandBlockToolStripMenuItem1.Enabled = isSubEntries && !isMultiSelection;
-            copyCommandBlockToolStripMenuItem.Enabled = isSubEntries && !isMultiSelection;
-            commandBlockDisableButton.Enabled = isSubEntries && !isMultiSelection && !isDisabled;
-            disableCommandBlockToolStripMenuItem1.Enabled = isSubEntries && !isMultiSelection && !isDisabled;
-            disableCommandBlockToolStripMenuItem.Enabled = isSubEntries && !isMultiSelection && !isDisabled;
+        }
 
-            timeTextBox.Text = isSubEntries ? timeTextBox.Text : null;
-            timeTextBox.Enabled = isSubEntries;
-            dataTextBox.Text = isMultiSelection ? "multi selection mode" : isSubEntries ? dataTextBox.Text : "no data selected?";
-            if (isSubEntries)
+        private void commandDetailGrid_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (isUpdatingCommandDetail || e.RowIndex < 0 || e.ColumnIndex != 1)
             {
-                bool isSubSubEntries = entry.subEntries[commandBlocksBox.SelectedIndex].subsubPointers.Count > 0;
-                dataTextBox.Text = isSubSubEntries ? dataTextBox.Text : "no data selected?";
-                commandsDeleteButton.Enabled = isSubSubEntries;
-                deleteCommandsToolStripMenuItem.Enabled = isSubSubEntries;
-                commandsCopyButton.Enabled = isSubSubEntries;
-                copyCommandsToolStripMenuItem.Enabled = isSubSubEntries;
-            }else
+                return;
+            }
+
+            if (tablefile?.table[animBox.SelectedIndex] is AnmChrEntry entry && entry.bHasData)
+            {
+                if (commandBlocksBox.SelectedIndex >= 0 && commandBlocksBox.SelectedIndex < entry.subEntries.Count)
+                {
+                    var block = entry.subEntries[commandBlocksBox.SelectedIndex];
+                    if (commandsBox.SelectedIndex >= 0 && commandsBox.SelectedIndex < block.subsubEntries.Count)
+                    {
+                        var data = block.subsubEntries[commandsBox.SelectedIndex];
+                        var row = commandDetailRows[e.RowIndex];
+                        data[row.Index] = row.Value;
+                        block.subsubEntries[commandsBox.SelectedIndex] = data;
+                        block.isEdited = true;
+                        subsubDataSource[commandsBox.SelectedIndex] = block.GetSubSubName(commandsBox.SelectedIndex);
+                        sizeLabel.Text = $"Command size: {data.Length} bytes";
+                    }
+                }
+            }
+        }
+
+        private void commandDetailGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = true;
+        }
+
+        private void CommandsBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Up)
+            {
+                e.Handled = true;
+                MoveSelectedCommand(-1);
+            }
+            else if (e.Control && e.KeyCode == Keys.Down)
+            {
+                e.Handled = true;
+                MoveSelectedCommand(1);
+            }
+        }
+
+        private void CommandBlocksBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Up)
+            {
+                e.Handled = true;
+                MoveSelectedCommandBlock(-1);
+            }
+            else if (e.Control && e.KeyCode == Keys.Down)
+            {
+                e.Handled = true;
+                MoveSelectedCommandBlock(1);
+            }
+        }
+
+        private void MoveSelectedCommand(int offset)
+        {
+            if (tablefile?.table[animBox.SelectedIndex] is AnmChrEntry entry && entry.bHasData)
+            {
+                if (commandBlocksBox.SelectedIndex < 0 || commandBlocksBox.SelectedIndex >= entry.subEntries.Count)
+                {
+                    return;
+                }
+
+                var block = entry.subEntries[commandBlocksBox.SelectedIndex];
+                if (commandsBox.SelectedIndex < 0 || commandsBox.SelectedIndex >= block.subsubEntries.Count)
+                {
+                    return;
+                }
+
+                int index = commandsBox.SelectedIndex;
+                int newIndex = index + offset;
+                if (newIndex < 0 || newIndex >= block.subsubEntries.Count)
+                {
+                    return;
+                }
+
+                (block.subsubEntries[index], block.subsubEntries[newIndex]) = (block.subsubEntries[newIndex], block.subsubEntries[index]);
+                (block.subsubPointers[index], block.subsubPointers[newIndex]) = (block.subsubPointers[newIndex], block.subsubPointers[index]);
+                (block.subsubIndices[index], block.subsubIndices[newIndex]) = (block.subsubIndices[newIndex], block.subsubIndices[index]);
+                (subsubDataSource[index], subsubDataSource[newIndex]) = (subsubDataSource[newIndex], subsubDataSource[index]);
+
+                block.isEdited = true;
+                commandsBox.SelectedIndex = newIndex;
+                RefreshCommandDetails();
+            }
+        }
+
+        private void MoveSelectedCommandBlock(int offset)
+        {
+            if (isMultiSelection)
+            {
+                return;
+            }
+
+            if (tablefile?.table[animBox.SelectedIndex] is AnmChrEntry entry && entry.bHasData)
+            {
+                if (commandBlocksBox.SelectedIndex < 0 || commandBlocksBox.SelectedIndex >= entry.subEntries.Count)
+                {
+                    return;
+                }
+
+                int index = commandBlocksBox.SelectedIndex;
+                int newIndex = index + offset;
+                if (newIndex < 0 || newIndex >= entry.subEntries.Count)
+                {
+                    return;
+                }
+
+                (entry.subEntries[index], entry.subEntries[newIndex]) = (entry.subEntries[newIndex], entry.subEntries[index]);
+                subDataSource = entry.getSubEntryList();
+                commandBlocksBox.DataSource = subDataSource;
+                commandBlocksBox.SelectedIndex = newIndex;
+                entry.subEntries[newIndex].isEdited = true;
+            }
+        }
+
+        private void AddReorderOptions()
+        {
+            if (commandContextMenuStrip1.Items.Count > 0)
+            {
+                commandContextMenuStrip1.Items.Insert(0, new ToolStripMenuItem("Move Command Down", null, (s, e) => MoveSelectedCommand(1)));
+                commandContextMenuStrip1.Items.Insert(0, new ToolStripMenuItem("Move Command Up", null, (s, e) => MoveSelectedCommand(-1)));
+                commandContextMenuStrip1.Items.Insert(2, new ToolStripSeparator());
+            }
+
+            if (commandBlockContextMenuStrip.Items.Count > 0)
+            {
+                commandBlockContextMenuStrip.Items.Insert(0, new ToolStripMenuItem("Move Block Down", null, (s, e) => MoveSelectedCommandBlock(1)));
+                commandBlockContextMenuStrip.Items.Insert(0, new ToolStripMenuItem("Move Block Up", null, (s, e) => MoveSelectedCommandBlock(-1)));
+                commandBlockContextMenuStrip.Items.Insert(2, new ToolStripSeparator());
+            }
+
+            commandsBox.KeyDown += CommandsBox_KeyDown;
+            commandBlocksBox.KeyDown += CommandBlocksBox_KeyDown;
+        }
+
+        // Validates if the command related buttons ought to be enabled or not
+        private void validateDeleteButtons(AnmChrEntry entry)
+        {
+            bool hasBlocks = entry?.subEntries.Count > 0;
+            bool isDisabled = false;
+            if (hasBlocks && commandBlocksBox.SelectedIndex > -1)
+            {
+                isDisabled = entry.subEntries[commandBlocksBox.SelectedIndex].isDisabled;
+            }
+
+            commandBlockDeleteButton.Enabled = hasBlocks && !isMultiSelection;
+            deleteCommandBlockToolStripMenuItem1.Enabled = hasBlocks && !isMultiSelection;
+            deleteCommandBlockToolStripMenuItem.Enabled = hasBlocks && !isMultiSelection;
+            commandBlockCopyButton.Enabled = hasBlocks && !isMultiSelection;
+            copyCommandBlockToolStripMenuItem1.Enabled = hasBlocks && !isMultiSelection;
+            copyCommandBlockToolStripMenuItem.Enabled = hasBlocks && !isMultiSelection;
+            commandBlockDisableButton.Enabled = hasBlocks && !isMultiSelection && !isDisabled;
+            disableCommandBlockToolStripMenuItem1.Enabled = hasBlocks && !isMultiSelection && !isDisabled;
+            disableCommandBlockToolStripMenuItem.Enabled = hasBlocks && !isMultiSelection && !isDisabled;
+
+            timeTextBox.Enabled = hasBlocks;
+            if (!hasBlocks)
+            {
+                timeTextBox.Clear();
+                commandsCopyButton.Enabled = false;
+                copyCommandsToolStripMenuItem.Enabled = false;
+                commandsDeleteButton.Enabled = false;
+                deleteCommandsToolStripMenuItem.Enabled = false;
+                ClearCommandDetailView(entry == null ? "Open a file to view command data." : "This animation has no command blocks.");
+                return;
+            }
+
+            if (isMultiSelection)
             {
                 commandsCopyButton.Enabled = false;
                 copyCommandsToolStripMenuItem.Enabled = false;
                 commandsDeleteButton.Enabled = false;
                 deleteCommandsToolStripMenuItem.Enabled = false;
+                ClearCommandDetailView("Command details are unavailable while multiple command blocks are selected.");
+                return;
             }
-        }
 
-        public int GetDataTextBoxFormat()
-        {
-            return dataTextBoxFormat;
-        }
+            var block = entry.subEntries[commandBlocksBox.SelectedIndex];
+            bool hasCommands = block.subsubPointers.Count > 0;
+            if (hasCommands)
+            {
+                RefreshCommandDetails();
+            }
+            else
+            {
+                ClearCommandDetailView("This command block has no commands yet.");
+            }
 
-        public void SetDataTexBoxFormat(int value = 0)
-        {
-            dataTextBoxFormat = value;
+            commandsDeleteButton.Enabled = hasCommands;
+            deleteCommandsToolStripMenuItem.Enabled = hasCommands;
+            commandsCopyButton.Enabled = hasCommands;
+            copyCommandsToolStripMenuItem.Enabled = hasCommands;
         }
 
     } // class
 
-    static class StringExtensions
-    {
-        public static IEnumerable<String> SplitInParts(this String s, Int32 partLength)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            if (partLength <= 0)
-                throw new ArgumentException("Part length has to be positive.", nameof(partLength));
-
-            for (var i = 0; i < s.Length; i += partLength)
-                yield return s.Substring(i, Math.Min(partLength, s.Length - i));
-        }
-    }
 } // ns
