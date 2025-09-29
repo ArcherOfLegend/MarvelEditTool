@@ -50,7 +50,7 @@ namespace AnmChrEdit
         private Dictionary<long, CommandDefinition> commandDefinitionMap;
         private Dictionary<long, byte[]> commandTemplates;
         private bool isUpdatingCommandSelector;
-
+        
         private class CommandByteRow
         {
             public int Index { get; set; }
@@ -527,6 +527,133 @@ namespace AnmChrEdit
                     }
                 }
             }
+        }
+
+        private void SetupModernInterface()
+        {
+            BackColor = Color.FromArgb(28, 28, 28);
+            ForeColor = Color.White;
+
+            tableLayoutPanel1.Controls.Remove(dataTextBox);
+            dataTextBox.Visible = false;
+            dataTextBox.Enabled = false;
+
+            commandDetailPanel = new Panel
+            {
+                Dock = DockStyle.Fill,
+                Padding = new Padding(8),
+                BackColor = Color.FromArgb(36, 36, 36)
+            };
+
+            commandDetailHeaderLabel = new Label
+            {
+                Dock = DockStyle.Top,
+                Height = 48,
+                TextAlign = ContentAlignment.MiddleLeft,
+                Font = new Font("Segoe UI", 11F, FontStyle.Bold),
+                ForeColor = Color.White,
+                Text = "Select a command to view its details."
+            };
+
+            commandDetailGrid = new DataGridView
+            {
+                Dock = DockStyle.Fill,
+                AutoGenerateColumns = false,
+                AllowUserToAddRows = false,
+                AllowUserToDeleteRows = false,
+                BackgroundColor = Color.FromArgb(32, 32, 32),
+                BorderStyle = BorderStyle.None,
+                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
+                EnableHeadersVisualStyles = false,
+                GridColor = Color.FromArgb(64, 64, 64),
+                RowHeadersVisible = false,
+                SelectionMode = DataGridViewSelectionMode.CellSelect,
+                MultiSelect = false,
+                ReadOnly = false
+            };
+
+            commandDetailGrid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(45, 45, 45),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+
+            commandDetailGrid.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(40, 40, 40),
+                ForeColor = Color.White,
+                SelectionBackColor = Color.FromArgb(70, 70, 70),
+                SelectionForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F)
+            };
+
+            var indexColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = nameof(CommandByteRow.Index),
+                HeaderText = "Byte",
+                ReadOnly = true,
+                Width = 60
+            };
+
+            var valueColumn = new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = nameof(CommandByteRow.Value),
+                HeaderText = "Value",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            };
+
+            commandDetailGrid.Columns.Add(indexColumn);
+            commandDetailGrid.Columns.Add(valueColumn);
+
+            commandDetailGrid.CellValidating += commandDetailGrid_CellValidating;
+            commandDetailGrid.CellValueChanged += commandDetailGrid_CellValueChanged;
+            commandDetailGrid.DataError += commandDetailGrid_DataError;
+
+            commandDetailGrid.DataSource = commandDetailRows;
+
+            commandDetailPanel.Controls.Add(commandDetailGrid);
+            commandDetailPanel.Controls.Add(commandDetailHeaderLabel);
+
+            tableLayoutPanel1.Controls.Add(commandDetailPanel, 0, 6);
+            tableLayoutPanel1.SetColumnSpan(commandDetailPanel, 3);
+            if (tableLayoutPanel1.RowStyles.Count > 6)
+            {
+                tableLayoutPanel1.RowStyles[6] = new RowStyle(SizeType.Percent, 100F);
+            }
+
+            formatUnsetButton.Visible = false;
+            format8HexButton.Visible = false;
+            format16HexButton.Visible = false;
+            formatDisplayToolStripMenuItem.Visible = false;
+
+            Color listBackColor = Color.FromArgb(32, 32, 32);
+            animBox.BackColor = listBackColor;
+            commandBlocksBox.BackColor = listBackColor;
+            commandsBox.BackColor = listBackColor;
+
+            animBox.ForeColor = Color.White;
+            commandBlocksBox.ForeColor = Color.White;
+            commandsBox.ForeColor = Color.White;
+
+            commandBlocksBox.BorderStyle = BorderStyle.FixedSingle;
+            commandsBox.BorderStyle = BorderStyle.FixedSingle;
+            animBox.BorderStyle = BorderStyle.FixedSingle;
+
+            tableLayoutPanel1.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel2.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel3.BackColor = Color.FromArgb(30, 30, 30);
+            tableLayoutPanel4.BackColor = Color.FromArgb(30, 30, 30);
+
+            splitContainer1.BackColor = Color.FromArgb(25, 25, 25);
+            splitContainer2.BackColor = Color.FromArgb(25, 25, 25);
+            splitContainer4.BackColor = Color.FromArgb(25, 25, 25);
+
+            sizeLabel.ForeColor = Color.WhiteSmoke;
+
+            ClearCommandDetailView();
+            AddReorderOptions();
         }
 
         public static string GetCompileDate()
@@ -1834,6 +1961,7 @@ namespace AnmChrEdit
                 commandSelector.Text = "Select a command...";
                 isUpdatingCommandSelector = false;
             }
+
         }
 
         private void commandDetailGrid_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
@@ -1875,6 +2003,7 @@ namespace AnmChrEdit
                         block.subsubEntries[commandsBox.SelectedIndex] = data;
                         block.isEdited = true;
                         CacheCommandTemplate(data);
+
                         subsubDataSource[commandsBox.SelectedIndex] = block.GetSubSubName(commandsBox.SelectedIndex);
                         sizeLabel.Text = $"Command size: {data.Length} bytes";
                     }
@@ -1957,6 +2086,7 @@ namespace AnmChrEdit
             {
                 e.Handled = true;
                 MoveSelectedCommand(-1);
+
             }
             else if (e.Control && e.KeyCode == Keys.Down)
             {
@@ -1978,6 +2108,7 @@ namespace AnmChrEdit
                 MoveSelectedCommandBlock(1);
             }
         }
+
 
         private void MoveSelectedCommand(int offset)
         {
@@ -2056,6 +2187,7 @@ namespace AnmChrEdit
                 commandBlockContextMenuStrip.Items.Insert(0, new ToolStripMenuItem("Move Block Up", null, (s, e) => MoveSelectedCommandBlock(-1)));
                 commandBlockContextMenuStrip.Items.Insert(2, new ToolStripSeparator());
             }
+
 
             commandsBox.KeyDown += CommandsBox_KeyDown;
             commandBlocksBox.KeyDown += CommandBlocksBox_KeyDown;

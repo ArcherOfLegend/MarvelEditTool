@@ -21,6 +21,9 @@ namespace MarvelEditTool
         public static bool bError;
         public string ImportPath;
         public string FilePath;
+        private AnmChrEntry currentAnmChrEntry;
+        private bool suppressSubEntryEvents;
+        private bool suppressCommandEvents;
 
         public TableEditor()
         {
@@ -30,6 +33,19 @@ namespace MarvelEditTool
             bDisableUpdate = true;
             FilePath = String.Empty;
             ImportPath = String.Empty;
+            try
+            {
+                string initResult = AnmChrSubEntry.InitCmdNames();
+                if (!string.IsNullOrWhiteSpace(initResult))
+                {
+                    AELogger.Log(initResult);
+                }
+            }
+            catch (Exception ex)
+            {
+                AELogger.Log("Failed to initialize command labels: " + ex.Message);
+            }
+            UpdateStructureView(null);
         }
 
         public static string GetCompileDate()
@@ -151,7 +167,7 @@ namespace MarvelEditTool
                 openFile.ShowDialog();
                 if (openFile.FileNames.Length > 0)
                 {
-                    TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], false);
+                    TableFile newTable = TableFile.LoadFile(openFile.FileNames[0], true);
                     int count = newTable.table.Count;
                     if (newTable == null && count != 0)
                     {
@@ -349,6 +365,7 @@ namespace MarvelEditTool
                 dataTextBox.Text = BitConverter.ToString(tablefile.table[animBox.SelectedIndex].GetData()).Replace("-", "");
                 dataTextBox.WordWrap = true;
                 sizeLabel.Text = "size: " + tablefile.table[animBox.SelectedIndex].size;
+                UpdateStructureView(tablefile.table[animBox.SelectedIndex]);
             }
             else
             {
@@ -357,12 +374,344 @@ namespace MarvelEditTool
                 exportButton.Enabled = false;
                 dataTextBox.Text = "";
                 sizeLabel.Text = "size: N/A";
+                UpdateStructureView(null);
             }
-            
+
 
             bDisableUpdate = false;
             animBox.EndUpdate();
             ResumeLayout();
+        }
+
+        private void UpdateStructureView(TableEntry entry)
+        {
+            if (entry == null || !entry.bHasData)
+            {
+                currentAnmChrEntry = null;
+                structureLayoutPanel.Visible = false;
+                structureUnavailableLabel.Visible = true;
+                structureUnavailableLabel.BringToFront();
+                subEntryListBox.DataSource = null;
+                commandListBox.DataSource = null;
+                subEntryListBox.Enabled = false;
+                commandListBox.Enabled = false;
+                commandDetailTextBox.Clear();
+                commandDetailLabel.Text = "Command details";
+                UpdateSubEntryButtons();
+                UpdateCommandButtons();
+                if (entryTabControl.SelectedTab == structureTabPage)
+                {
+                    entryTabControl.SelectedTab = rawDataTabPage;
+                }
+                return;
+            }
+
+            currentAnmChrEntry = entry as AnmChrEntry;
+            if (currentAnmChrEntry == null)
+            {
+                structureLayoutPanel.Visible = false;
+                structureUnavailableLabel.Visible = true;
+                structureUnavailableLabel.BringToFront();
+                subEntryListBox.DataSource = null;
+                commandListBox.DataSource = null;
+                subEntryListBox.Enabled = false;
+                commandListBox.Enabled = false;
+                commandDetailTextBox.Clear();
+                commandDetailLabel.Text = "Command details";
+                UpdateSubEntryButtons();
+                UpdateCommandButtons();
+                if (entryTabControl.SelectedTab == structureTabPage)
+                {
+                    entryTabControl.SelectedTab = rawDataTabPage;
+                }
+                return;
+            }
+
+            structureLayoutPanel.Visible = true;
+            structureUnavailableLabel.Visible = false;
+            subEntryListBox.Enabled = true;
+            commandListBox.Enabled = true;
+            entryTabControl.SelectedTab = structureTabPage;
+            PopulateSubEntries();
+        }
+
+        private void PopulateSubEntries(int preferredIndex = -1)
+        {
+            if (currentAnmChrEntry == null)
+            {
+                suppressSubEntryEvents = true;
+                subEntryListBox.DataSource = null;
+                suppressSubEntryEvents = false;
+                UpdateSubEntryButtons();
+                PopulateCommandList(-1);
+                return;
+            }
+
+            var items = currentAnmChrEntry.subEntries.Select(sub => sub.GetName()).ToList();
+            suppressSubEntryEvents = true;
+            int selection = preferredIndex >= 0 ? preferredIndex : subEntryListBox.SelectedIndex;
+            subEntryListBox.DataSource = null;
+            subEntryListBox.DataSource = items;
+            if (items.Count > 0)
+            {
+                if (selection < 0 || selection >= items.Count)
+                {
+                    selection = 0;
+                }
+                subEntryListBox.SelectedIndex = selection;
+            }
+            else
+            {
+                subEntryListBox.SelectedIndex = -1;
+            }
+            suppressSubEntryEvents = false;
+            UpdateSubEntryButtons();
+            PopulateCommandList(subEntryListBox.SelectedIndex);
+        }
+
+        private void PopulateCommandList(int subIndex, int preferredCommandIndex = -1)
+        {
+            suppressCommandEvents = true;
+            if (currentAnmChrEntry == null || subIndex < 0 || subIndex >= currentAnmChrEntry.subEntries.Count)
+            {
+                commandListBox.DataSource = null;
+                commandDetailTextBox.Clear();
+                commandDetailLabel.Text = "Command details";
+                commandListBox.Enabled = currentAnmChrEntry != null;
+                suppressCommandEvents = false;
+                UpdateCommandButtons();
+                return;
+            }
+
+            var subEntry = currentAnmChrEntry.subEntries[subIndex];
+            var commands = subEntry.subsubEntries.Select((_, idx) => subEntry.GetSubSubName(idx)).ToList();
+            int selection = preferredCommandIndex >= 0 ? preferredCommandIndex : commandListBox.SelectedIndex;
+            commandListBox.DataSource = null;
+            commandListBox.DataSource = commands;
+            if (commands.Count > 0)
+            {
+                if (selection < 0 || selection >= commands.Count)
+                {
+                    selection = 0;
+                }
+                commandListBox.SelectedIndex = selection;
+            }
+            else
+            {
+                commandListBox.SelectedIndex = -1;
+            }
+            suppressCommandEvents = false;
+            UpdateCommandButtons();
+            UpdateCommandDetails(commandListBox.SelectedIndex);
+        }
+
+        private void UpdateSubEntryButtons()
+        {
+            if (currentAnmChrEntry == null || currentAnmChrEntry.subEntries.Count == 0 || subEntryListBox.SelectedIndex < 0)
+            {
+                subEntryUpButton.Enabled = false;
+                subEntryDownButton.Enabled = false;
+                return;
+            }
+
+            int index = subEntryListBox.SelectedIndex;
+            subEntryUpButton.Enabled = index > 0;
+            subEntryDownButton.Enabled = index < currentAnmChrEntry.subEntries.Count - 1;
+        }
+
+        private void UpdateCommandButtons()
+        {
+            if (currentAnmChrEntry == null || subEntryListBox.SelectedIndex < 0 || subEntryListBox.SelectedIndex >= currentAnmChrEntry.subEntries.Count)
+            {
+                commandMoveUpButton.Enabled = false;
+                commandMoveDownButton.Enabled = false;
+                return;
+            }
+
+            var subEntry = currentAnmChrEntry.subEntries[subEntryListBox.SelectedIndex];
+            if (commandListBox.SelectedIndex < 0)
+            {
+                commandMoveUpButton.Enabled = false;
+                commandMoveDownButton.Enabled = false;
+                return;
+            }
+
+            int commandIndex = commandListBox.SelectedIndex;
+            commandMoveUpButton.Enabled = commandIndex > 0;
+            commandMoveDownButton.Enabled = commandIndex < subEntry.subsubEntries.Count - 1;
+        }
+
+        private void UpdateCommandDetails(int commandIndex)
+        {
+            if (currentAnmChrEntry == null || subEntryListBox.SelectedIndex < 0 || subEntryListBox.SelectedIndex >= currentAnmChrEntry.subEntries.Count)
+            {
+                commandDetailTextBox.Clear();
+                commandDetailLabel.Text = "Command details";
+                return;
+            }
+
+            var subEntry = currentAnmChrEntry.subEntries[subEntryListBox.SelectedIndex];
+            if (commandIndex < 0 || commandIndex >= subEntry.subsubEntries.Count)
+            {
+                commandDetailTextBox.Clear();
+                commandDetailLabel.Text = "Command details";
+                return;
+            }
+
+            commandDetailLabel.Text = $"Command details (Time {subEntry.localindex})";
+            commandDetailTextBox.Text = FormatCommandDetails(subEntry, commandIndex);
+        }
+
+        private string FormatCommandDetails(AnmChrSubEntry subEntry, int commandIndex)
+        {
+            byte[] data = subEntry.subsubEntries[commandIndex];
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine($"Command: {subEntry.GetSubSubName(commandIndex)}");
+            builder.AppendLine($"Command index: {commandIndex + 1} of {subEntry.subsubEntries.Count}");
+            builder.AppendLine($"Block index: {subEntry.subsubIndices[commandIndex]}");
+            builder.AppendLine($"Data length: {data.Length} bytes");
+            builder.AppendLine();
+            builder.AppendLine("Parameters:");
+
+            if (data.Length == 0)
+            {
+                builder.AppendLine("  (no parameters)");
+            }
+            else
+            {
+                int chunkCount = data.Length / 4;
+                for (int i = 0; i < chunkCount; i++)
+                {
+                    int offset = i * 4;
+                    int intValue = BitConverter.ToInt32(data, offset);
+                    float floatValue = BitConverter.ToSingle(data, offset);
+                    builder.AppendLine($"  [{i}] Int32: {intValue}    Float: {floatValue}");
+                }
+
+                int remainder = data.Length % 4;
+                if (remainder > 0)
+                {
+                    builder.Append("  Remaining bytes: ");
+                    for (int i = data.Length - remainder; i < data.Length; i++)
+                    {
+                        builder.Append(data[i]);
+                        if (i < data.Length - 1)
+                        {
+                            builder.Append(", ");
+                        }
+                    }
+                    builder.AppendLine();
+                }
+            }
+
+            return builder.ToString();
+        }
+
+        private void MoveSubEntry(int direction)
+        {
+            if (currentAnmChrEntry == null)
+            {
+                return;
+            }
+
+            int index = subEntryListBox.SelectedIndex;
+            if (index < 0)
+            {
+                return;
+            }
+
+            int newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= currentAnmChrEntry.subEntries.Count)
+            {
+                return;
+            }
+
+            AnmChrSubEntry item = currentAnmChrEntry.subEntries[index];
+            currentAnmChrEntry.subEntries.RemoveAt(index);
+            currentAnmChrEntry.subEntries.Insert(newIndex, item);
+            currentAnmChrEntry.UpdateSize();
+            SetTextConcurrent(currentAnmChrEntry.GetData());
+            PopulateSubEntries(newIndex);
+        }
+
+        private void MoveCommand(int direction)
+        {
+            if (currentAnmChrEntry == null)
+            {
+                return;
+            }
+
+            int subIndex = subEntryListBox.SelectedIndex;
+            if (subIndex < 0 || subIndex >= currentAnmChrEntry.subEntries.Count)
+            {
+                return;
+            }
+
+            var subEntry = currentAnmChrEntry.subEntries[subIndex];
+            int commandIndex = commandListBox.SelectedIndex;
+            if (commandIndex < 0)
+            {
+                return;
+            }
+
+            int newIndex = commandIndex + direction;
+            if (newIndex < 0 || newIndex >= subEntry.subsubEntries.Count)
+            {
+                return;
+            }
+
+            byte[] command = subEntry.subsubEntries[commandIndex];
+            int commandId = subEntry.subsubIndices[commandIndex];
+            subEntry.subsubEntries.RemoveAt(commandIndex);
+            subEntry.subsubIndices.RemoveAt(commandIndex);
+            subEntry.subsubEntries.Insert(newIndex, command);
+            subEntry.subsubIndices.Insert(newIndex, commandId);
+            subEntry.isEdited = true;
+            currentAnmChrEntry.UpdateSize();
+            SetTextConcurrent(currentAnmChrEntry.GetData());
+            PopulateCommandList(subIndex, newIndex);
+        }
+
+        private void subEntryListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (suppressSubEntryEvents)
+            {
+                return;
+            }
+
+            UpdateSubEntryButtons();
+            PopulateCommandList(subEntryListBox.SelectedIndex);
+        }
+
+        private void commandListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (suppressCommandEvents)
+            {
+                return;
+            }
+
+            UpdateCommandButtons();
+            UpdateCommandDetails(commandListBox.SelectedIndex);
+        }
+
+        private void subEntryUpButton_Click(object sender, EventArgs e)
+        {
+            MoveSubEntry(-1);
+        }
+
+        private void subEntryDownButton_Click(object sender, EventArgs e)
+        {
+            MoveSubEntry(1);
+        }
+
+        private void commandMoveUpButton_Click(object sender, EventArgs e)
+        {
+            MoveCommand(-1);
+        }
+
+        private void commandMoveDownButton_Click(object sender, EventArgs e)
+        {
+            MoveCommand(1);
         }
 
         private void importButton_Click(object sender, EventArgs ev)
@@ -466,6 +815,14 @@ namespace MarvelEditTool
             animBox.SelectedIndex = s;
             animBox.TopIndex = top;
             bDisableUpdate = false;
+            if (tablefile != null && animBox.SelectedIndex >= 0 && animBox.SelectedIndex < tablefile.table.Count)
+            {
+                UpdateStructureView(tablefile.table[animBox.SelectedIndex]);
+            }
+            else
+            {
+                UpdateStructureView(null);
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
