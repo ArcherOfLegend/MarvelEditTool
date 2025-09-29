@@ -45,11 +45,49 @@ namespace AnmChrEdit
         private Panel commandDetailPanel;
         private Label commandDetailHeaderLabel;
         private DataGridView commandDetailGrid;
+        private ComboBox commandSelector;
+        private BindingList<CommandDefinition> commandDefinitionSource;
+        private Dictionary<long, CommandDefinition> commandDefinitionMap;
+        private Dictionary<long, byte[]> commandTemplates;
+        private bool isUpdatingCommandSelector;
 
         private class CommandByteRow
         {
             public int Index { get; set; }
             public byte Value { get; set; }
+        }
+
+        private class CommandDefinition
+        {
+            public CommandDefinition(long key, string label)
+            {
+                Key = key;
+                DisplayLabel = label;
+                Group = (byte)(key >> 32);
+                IdLow = (byte)(key & 0xFF);
+                IdHigh = (byte)((key >> 8) & 0xFF);
+                Code = ExtractCode(label);
+            }
+
+            public long Key { get; }
+            public byte Group { get; }
+            public byte IdLow { get; }
+            public byte IdHigh { get; }
+            public string DisplayLabel { get; }
+            public string Code { get; }
+
+            private static string ExtractCode(string label)
+            {
+                if (string.IsNullOrWhiteSpace(label))
+                {
+                    return string.Empty;
+                }
+
+                var parts = label.Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                return parts.Length > 0 ? parts[0] : label;
+            }
+
+            public override string ToString() => DisplayLabel;
         }
 
         public ACE()
@@ -66,9 +104,11 @@ namespace AnmChrEdit
             commandBlocksBox.DrawMode = DrawMode.OwnerDrawFixed;
 
             commandDetailRows = new BindingList<CommandByteRow>();
+            commandTemplates = new Dictionary<long, byte[]>();
+            commandDefinitionMap = new Dictionary<long, CommandDefinition>();
+            commandDefinitionSource = new BindingList<CommandDefinition>();
             SetupModernInterface();
-
-    }
+        }
 
         private void SetupModernInterface()
         {
@@ -86,15 +126,42 @@ namespace AnmChrEdit
                 BackColor = Color.FromArgb(36, 36, 36)
             };
 
+            PopulateCommandDefinitionSource();
+
             commandDetailHeaderLabel = new Label
             {
-                Dock = DockStyle.Top,
-                Height = 48,
+                Dock = DockStyle.Fill,
+                AutoSize = true,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Font = new Font("Segoe UI", 11F, FontStyle.Bold),
                 ForeColor = Color.White,
                 Text = "Select a command to view its details."
             };
+
+            commandSelector = new ComboBox
+            {
+                Dock = DockStyle.Top,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                AutoCompleteMode = AutoCompleteMode.SuggestAppend,
+                AutoCompleteSource = AutoCompleteSource.ListItems,
+                BackColor = Color.FromArgb(45, 45, 45),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Margin = new Padding(0, 8, 0, 0),
+                Font = new Font("Segoe UI", 9F, FontStyle.Regular),
+                Enabled = false,
+                IntegralHeight = false,
+                MaxDropDownItems = 20
+            };
+
+            commandSelector.DataSource = commandDefinitionSource;
+            commandSelector.DisplayMember = nameof(CommandDefinition.DisplayLabel);
+            commandSelector.SelectedIndexChanged += commandSelector_SelectedIndexChanged;
+
+            isUpdatingCommandSelector = true;
+            commandSelector.SelectedIndex = -1;
+            commandSelector.Text = "Select a command...";
+            isUpdatingCommandSelector = false;
 
             commandDetailGrid = new DataGridView
             {
@@ -154,8 +221,20 @@ namespace AnmChrEdit
 
             commandDetailGrid.DataSource = commandDetailRows;
 
+            var commandDetailHeaderLayout = new TableLayoutPanel
+            {
+                Dock = DockStyle.Top,
+                ColumnCount = 1,
+                AutoSize = true,
+                BackColor = Color.FromArgb(36, 36, 36)
+            };
+            commandDetailHeaderLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            commandDetailHeaderLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            commandDetailHeaderLayout.Controls.Add(commandDetailHeaderLabel, 0, 0);
+            commandDetailHeaderLayout.Controls.Add(commandSelector, 0, 1);
+
             commandDetailPanel.Controls.Add(commandDetailGrid);
-            commandDetailPanel.Controls.Add(commandDetailHeaderLabel);
+            commandDetailPanel.Controls.Add(commandDetailHeaderLayout);
 
             tableLayoutPanel1.Controls.Add(commandDetailPanel, 0, 6);
             tableLayoutPanel1.SetColumnSpan(commandDetailPanel, 3);
@@ -195,6 +274,259 @@ namespace AnmChrEdit
 
             ClearCommandDetailView();
             AddReorderOptions();
+        }
+
+        private void PopulateCommandDefinitionSource()
+        {
+            if (commandDefinitionSource == null)
+            {
+                commandDefinitionSource = new BindingList<CommandDefinition>();
+            }
+
+            if (commandDefinitionMap == null)
+            {
+                commandDefinitionMap = new Dictionary<long, CommandDefinition>();
+            }
+
+            commandDefinitionMap.Clear();
+            commandDefinitionSource.Clear();
+
+            if (AnmChrSubEntry.cmdNames == null || AnmChrSubEntry.cmdNames.Count == 0)
+            {
+                return;
+            }
+
+            var orderedDefinitions = AnmChrSubEntry.cmdNames
+                .Select(pair => new CommandDefinition(pair.Key, pair.Value))
+                .OrderBy(definition => definition.Code, StringComparer.OrdinalIgnoreCase)
+                .ThenBy(definition => definition.DisplayLabel, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var definition in orderedDefinitions)
+            {
+                commandDefinitionMap[definition.Key] = definition;
+                AddDefinitionSorted(definition);
+            }
+        }
+
+        private void AddDefinitionSorted(CommandDefinition definition)
+        {
+            int insertIndex = 0;
+            while (insertIndex < commandDefinitionSource.Count)
+            {
+                var existing = commandDefinitionSource[insertIndex];
+                int codeComparison = string.Compare(existing.Code, definition.Code, StringComparison.OrdinalIgnoreCase);
+                if (codeComparison > 0)
+                {
+                    break;
+                }
+
+                if (codeComparison == 0)
+                {
+                    int labelComparison = string.Compare(existing.DisplayLabel, definition.DisplayLabel, StringComparison.OrdinalIgnoreCase);
+                    if (labelComparison > 0)
+                    {
+                        break;
+                    }
+                }
+
+                insertIndex++;
+            }
+
+            commandDefinitionSource.Insert(insertIndex, definition);
+        }
+
+        private CommandDefinition EnsureCommandDefinition(long key, string label)
+        {
+            if (key < 0)
+            {
+                return null;
+            }
+
+            if (commandDefinitionMap != null && commandDefinitionMap.TryGetValue(key, out var definition))
+            {
+                return definition;
+            }
+
+            var displayLabel = string.IsNullOrWhiteSpace(label) ? $"0x{key:X}" : label;
+            definition = new CommandDefinition(key, displayLabel);
+            commandDefinitionMap[key] = definition;
+            AddDefinitionSorted(definition);
+            return definition;
+        }
+
+        private static byte[] CloneBytes(byte[] source)
+        {
+            if (source == null)
+            {
+                return Array.Empty<byte>();
+            }
+
+            var clone = new byte[source.Length];
+            Array.Copy(source, clone, clone.Length);
+            return clone;
+        }
+
+        private long GetCommandKey(byte[] data)
+        {
+            if (data == null || data.Length < 6)
+            {
+                return -1;
+            }
+
+            long key = ((long)data[0] << 32);
+            key += data[4];
+            key += (long)data[5] << 8;
+            return key;
+        }
+
+        private void CacheCommandTemplate(byte[] data)
+        {
+            if (commandTemplates == null)
+            {
+                commandTemplates = new Dictionary<long, byte[]>();
+            }
+
+            long key = GetCommandKey(data);
+            if (key < 0)
+            {
+                return;
+            }
+
+            commandTemplates[key] = CloneBytes(data);
+        }
+
+        private bool TryGetTemplate(long key, out byte[] template)
+        {
+            template = null;
+
+            if (key < 0)
+            {
+                return false;
+            }
+
+            if (commandTemplates != null && commandTemplates.TryGetValue(key, out var cached))
+            {
+                template = CloneBytes(cached);
+                return true;
+            }
+
+            var discovered = FindTemplateInTable(key);
+            if (discovered != null)
+            {
+                template = CloneBytes(discovered);
+                commandTemplates[key] = CloneBytes(discovered);
+                return true;
+            }
+
+            return false;
+        }
+
+        private byte[] FindTemplateInTable(long key)
+        {
+            if (tablefile?.table == null)
+            {
+                return null;
+            }
+
+            foreach (var entryBase in tablefile.table)
+            {
+                if (entryBase is AnmChrEntry entry && entry.bHasData)
+                {
+                    foreach (var block in entry.subEntries)
+                    {
+                        foreach (var command in block.subsubEntries)
+                        {
+                            if (command != null && command.Length >= 6 && GetCommandKey(command) == key)
+                            {
+                                return CloneBytes(command);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void ApplyCommandHeader(byte[] data, CommandDefinition definition)
+        {
+            if (data == null || definition == null)
+            {
+                return;
+            }
+
+            if (data.Length > 0)
+            {
+                data[0] = definition.Group;
+            }
+
+            if (data.Length > 4)
+            {
+                data[4] = definition.IdLow;
+            }
+
+            if (data.Length > 5)
+            {
+                data[5] = definition.IdHigh;
+            }
+        }
+
+        private byte[] BuildCommandData(CommandDefinition definition, byte[] currentData)
+        {
+            if (definition == null)
+            {
+                return currentData ?? Array.Empty<byte>();
+            }
+
+            if (TryGetTemplate(definition.Key, out var template))
+            {
+                ApplyCommandHeader(template, definition);
+                return template;
+            }
+
+            int length = currentData?.Length ?? 0;
+            if (length < 8)
+            {
+                length = 16;
+            }
+
+            var data = new byte[length];
+            if (currentData != null && currentData.Length > 0)
+            {
+                Array.Copy(currentData, data, Math.Min(currentData.Length, data.Length));
+            }
+
+            ApplyCommandHeader(data, definition);
+            return data;
+        }
+
+        private void RebuildCommandTemplates()
+        {
+            if (commandTemplates == null)
+            {
+                commandTemplates = new Dictionary<long, byte[]>();
+            }
+
+            commandTemplates.Clear();
+
+            if (tablefile?.table == null)
+            {
+                return;
+            }
+
+            foreach (var entryBase in tablefile.table)
+            {
+                if (entryBase is AnmChrEntry entry && entry.bHasData)
+                {
+                    foreach (var block in entry.subEntries)
+                    {
+                        foreach (var command in block.subsubEntries)
+                        {
+                            CacheCommandTemplate(command);
+                        }
+                    }
+                }
+            }
         }
 
         public static string GetCompileDate()
@@ -410,6 +742,7 @@ namespace AnmChrEdit
                     }
 
                     tablefile = newTable;
+                    RebuildCommandTemplates();
                     filePath = openFile.FileNames[0];
 #if DEBUG
                     tablefile.AnalyzeAnmChr();
@@ -1442,6 +1775,8 @@ namespace AnmChrEdit
             }
 
             var data = block.subsubEntries[commandsBox.SelectedIndex];
+            CacheCommandTemplate(data);
+
             isUpdatingCommandDetail = true;
             commandDetailRows.Clear();
             for (int i = 0; i < data.Length; i++)
@@ -1451,8 +1786,27 @@ namespace AnmChrEdit
             isUpdatingCommandDetail = false;
 
             commandDetailGrid.Enabled = commandDetailRows.Count > 0;
-            commandDetailHeaderLabel.Text = $"{block.GetSubSubName(commandsBox.SelectedIndex)}  •  {data.Length} bytes";
+
+            var commandLabel = block.GetSubSubName(commandsBox.SelectedIndex);
+            commandDetailHeaderLabel.Text = $"{commandLabel}  •  {data.Length} bytes";
             sizeLabel.Text = $"Command size: {data.Length} bytes";
+
+            if (commandSelector != null)
+            {
+                isUpdatingCommandSelector = true;
+                var definition = EnsureCommandDefinition(GetCommandKey(data), commandLabel);
+                commandSelector.Enabled = definition != null;
+                if (definition != null)
+                {
+                    commandSelector.SelectedItem = definition;
+                }
+                else
+                {
+                    commandSelector.SelectedIndex = -1;
+                    commandSelector.Text = commandLabel;
+                }
+                isUpdatingCommandSelector = false;
+            }
         }
 
         private void ClearCommandDetailView(string message = "Select a command to view its byte values.")
@@ -1470,6 +1824,15 @@ namespace AnmChrEdit
             if (!string.IsNullOrEmpty(message))
             {
                 sizeLabel.Text = message;
+            }
+
+            if (commandSelector != null)
+            {
+                isUpdatingCommandSelector = true;
+                commandSelector.Enabled = false;
+                commandSelector.SelectedIndex = -1;
+                commandSelector.Text = "Select a command...";
+                isUpdatingCommandSelector = false;
             }
         }
 
@@ -1511,6 +1874,7 @@ namespace AnmChrEdit
                         data[row.Index] = row.Value;
                         block.subsubEntries[commandsBox.SelectedIndex] = data;
                         block.isEdited = true;
+                        CacheCommandTemplate(data);
                         subsubDataSource[commandsBox.SelectedIndex] = block.GetSubSubName(commandsBox.SelectedIndex);
                         sizeLabel.Text = $"Command size: {data.Length} bytes";
                     }
@@ -1521,6 +1885,70 @@ namespace AnmChrEdit
         private void commandDetailGrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        private void commandSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (isUpdatingCommandSelector || commandSelector == null || commandSelector.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            if (!(commandSelector.SelectedItem is CommandDefinition definition))
+            {
+                return;
+            }
+
+            if (tablefile?.table == null || animBox.SelectedIndex < 0 || animBox.SelectedIndex >= tablefile.table.Count)
+            {
+                return;
+            }
+
+            if (!(tablefile.table[animBox.SelectedIndex] is AnmChrEntry entry) || !entry.bHasData)
+            {
+                return;
+            }
+
+            if (commandBlocksBox.SelectedIndex < 0 || commandBlocksBox.SelectedIndex >= entry.subEntries.Count)
+            {
+                return;
+            }
+
+            var block = entry.subEntries[commandBlocksBox.SelectedIndex];
+            if (commandsBox.SelectedIndex < 0 || commandsBox.SelectedIndex >= block.subsubEntries.Count)
+            {
+                return;
+            }
+
+            var currentData = block.subsubEntries[commandsBox.SelectedIndex];
+            var newData = BuildCommandData(definition, currentData);
+
+            bool lengthChanged = currentData == null || currentData.Length != newData.Length;
+            bool contentChanged = lengthChanged || currentData == null || !currentData.SequenceEqual(newData);
+
+            if (!contentChanged)
+            {
+                ApplyCommandHeader(newData, definition);
+                return;
+            }
+
+            block.subsubEntries[commandsBox.SelectedIndex] = newData;
+            block.isEdited = true;
+            CacheCommandTemplate(newData);
+
+            bDisableSubSubUpdate = true;
+            subsubDataSource[commandsBox.SelectedIndex] = block.GetSubSubName(commandsBox.SelectedIndex);
+            bDisableSubSubUpdate = false;
+
+            isUpdatingCommandSelector = true;
+            try
+            {
+                RefreshCommandDetails();
+            }
+            finally
+            {
+                isUpdatingCommandSelector = false;
+            }
         }
 
         private void CommandsBox_KeyDown(object sender, KeyEventArgs e)
