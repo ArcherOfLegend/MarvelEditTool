@@ -21,6 +21,6 @@ jobs:
       - name: Cargo fmt
         run: cargo fmt --check
       - name: Cargo clippy
-        run: cargo clippy --all-targets --all-features warnings
+        run: cargo clippy --all-targets --all-features
       - name: Cargo test
         run: cargo test --all
