@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "marveledittool-rs/marveledata",
+    "marveledittool-rs/tools/anmchr-cli",
+]
+resolver = "2"
