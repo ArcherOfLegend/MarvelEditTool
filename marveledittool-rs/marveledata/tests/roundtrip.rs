@@ -22,13 +22,13 @@ fn mask_first(bytes: &mut [u8]) {
 #[test]
 fn sample_file_is_non_empty() {
     let bytes = first_sample_bytes();
+
     assert!(!bytes.is_empty(), "sample fixture must not be empty");
 }
 
 #[test]
 fn table_round_trip_preserves_bytes() {
     let bytes = first_sample_bytes();
-
     let mut input = NamedTempFile::new().expect("create temp input file");
     input
         .write_all(&bytes)
