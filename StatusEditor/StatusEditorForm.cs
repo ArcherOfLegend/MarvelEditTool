@@ -395,6 +395,7 @@ namespace StatusEditor
                 openFile.Filter = "Intro or Outro ID File (*.cpi;*.1DF3E03E)|*.cpi;*.1DF3E03E";
             }
             else
+                // should now support profile files!
                 openFile.Filter = "Supported Data (" +
                     "*.ccm;*.28DD8317;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.csp;*.52A8DBF6;*.cli;*.5B486CCE;*.sht;*.10BE43D4;*.cpi;*.1DF3E03E;|" +
                     "*.ccm;*.28DD8317;*.csp;*.52A8DBF6;*.ati;*.227A8048;*.chs;*.3C41466B;*.cba;*.3C6EA504;*.cli;*.5B486CCE;*.sht;*.10BE43D4;*.cpi;*.1DF3E03E;|" +
@@ -802,11 +803,11 @@ namespace StatusEditor
             entry.RemoveSubChunk(index);
             // Decrease the entry size
             entry.size -= 32;
-            // Update view while maintaining changed data - added string to prevent save conflict with SaveOldData() method
+            // Update view while maintaining changed data
             animBox_SelectedIndexChanged("removeSubChunk", null);
         }
 
-        // Iterates over table entries and sets indexes sequentially, correcting any out of place.
+        // Iterates over table entries and sets indexes sequentially
         // Throws error when called and there are empty entries in table
         public void CorrectIndexes()
         {
@@ -880,7 +881,7 @@ namespace StatusEditor
             }
         }
 
-        // Moves entry N spaces. A positive number means moving down, a negative means up.
+        // Moves entry N spaces
         public void MoveEntry(int direction)
         {
             // Calculate new index using move direction
@@ -889,12 +890,12 @@ namespace StatusEditor
 
             // Checking bounds of the range
             if (newIndex < 0 || newIndex >= animBox.Items.Count)
-                return; // Index out of range - nothing to do
+                return; // Index out of range
 
             // Retrieve the data source
             var dataSource = animBox.DataSource as IList;
             if (dataSource == null)
-                return; // DataSource is not a list - nothing to do
+                return; // DataSource is not a list
 
             // Get the selected item
             var selected = animBox.SelectedItem;
@@ -923,7 +924,7 @@ namespace StatusEditor
         {
             // Checking selected item
             if (animBox.SelectedItem == null || animBox.SelectedIndex <= 0 || animBox.SelectedIndex + 1 > tablefile.TotalEntries)
-                return; // Out of bounds or first entry - nothing to do
+                return; // Out of bounds
 
             if (tablefile.fileExtension.Contains("CPI"))
             {
@@ -942,7 +943,7 @@ namespace StatusEditor
         {
             // Checking selected item
             if (animBox.SelectedItem == null || animBox.SelectedIndex < 0 || animBox.SelectedIndex + 1 >= tablefile.TotalEntries)
-                return; // Out of bounds or last entry - nothing to do
+                return; // Out of bounds
 
             if (tablefile.fileExtension.Contains("CPI"))
             {
@@ -957,7 +958,7 @@ namespace StatusEditor
             animBox_SelectedIndexChanged("moveEntryDown", null);
         }
 
-        // The intro and victory blocks live in the same file, so let the user pick which one to add to.
+        // Lets user add new intro or victory entry.
         private void ShowAddProfileEntryMenu()
         {
             addProfileEntryMenuStrip.Items.Clear();
@@ -987,7 +988,7 @@ namespace StatusEditor
             animBox_SelectedIndexChanged("addProfileEntry", null);
         }
 
-        // CPI reorder. Entries won't cross the intro/victory boundary, that would change their meaning.
+        // CPI reorder thing.
         private void MoveProfileSelection(int direction)
         {
             int index = animBox.SelectedIndex;
@@ -1046,6 +1047,7 @@ namespace StatusEditor
         }
 
         // Ugly solution... every second duplicate clears the first copied entry
+        // TODO: Clean this!!!
         private void RefreshDataAlt()
         {
             bDisableUpdate = true;
@@ -1290,12 +1292,12 @@ namespace StatusEditor
                 correctIndexToolStripMenuItem.Enabled = !structViewType.Name.Contains("ATKInfo") && !tablefile.fileExtension.Contains("CPI") && !tablefile.fileExtension.Contains("CHS"); // TODO: create a propper get type method
                 entryExportButton.Enabled = true;
                 entryImportButton.Enabled = true;
-                // CPI can delete anything except entry 0, the self chunk
+                // CPI can delete anything except entry 0
                 entryDeleteButton.Enabled = tablefile.fileExtension.Contains("CPI")
                     ? animBox.SelectedIndex > 0
                     : !structViewType.Name.Contains("ATKInfo") && !structViewType.Name.Contains("BaseAct"); // TODO: create a propper get type method
                 entryDuplicateStripMenuItem.Enabled = entryInsertButton.Visible && !tablefile.fileExtension.Contains("CPI") && !tablefile.fileExtension.Contains("CHS");
-                // the Extend List item lives in this button's dropdown, so CPI needs the button itself
+                // the Extend List item lives in this button's dropdown
                 entryInsertButton.Enabled = !tablefile.fileExtension.Contains("CHS");
                 entryExtendStripMenuItem.Enabled = entryInsertButton.Visible;
                 entryInsertButton.Visible = !tablefile.fileExtension.Contains("SHT");
@@ -1762,7 +1764,6 @@ namespace StatusEditor
                 default:
                     if (tablefile.fileExtension.Contains("CPI"))
                     {
-                        // CPI keeps its own counts, and the generic path casts everything to MultiStructEntry
                         int cpiIndex = animBox.SelectedIndex;
                         tablefile.DeleteProfileEntry(cpiIndex);
                         RefreshData();
