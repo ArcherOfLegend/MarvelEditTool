@@ -34,12 +34,15 @@ namespace MarvelData
         private String shotName2String;
         private byte[] headerC;
         private byte[] headerD;
+        // for .CPI only. the file has no pointer table, just two counts in the header,
+        // so we need to remember where the intro block stops and the victory block starts.
         public int cpiIntroCount;
         public const int CPIHeaderSize = 0x18; // magic + unk04 + intro count + victory count + self chunk
         public const int CPIEntrySize = 8;
 
         public uint TotalEntries
-        { get
+        {
+            get
             {
                 return (uint)table.Count(entry => entry.bHasData);
             }
@@ -51,7 +54,7 @@ namespace MarvelData
 
         public static Type[] structTypes = { typeof(StructEntry<StatusChunk>), typeof(StructEntry<ATKInfoChunk>), typeof(StructEntry<BaseActChunk>),
             typeof(CmdSpAtkEntry), typeof(CmdComboEntry), typeof(AnmChrEntry), typeof(CollisionEntry), typeof(StructEntry<ShotChunk>),
-            typeof(StructEntry<ShotSChunk>), typeof(StructEntry<ShotLChunk>), typeof(StructEntry<ShotXSChunk>), typeof(StructEntry<ProfileSelfChunk>), 
+            typeof(StructEntry<ShotSChunk>), typeof(StructEntry<ShotLChunk>), typeof(StructEntry<ShotXSChunk>), typeof(StructEntry<ProfileSelfChunk>),
             typeof(StructEntry<ProfileChunk>), typeof(StructEntry<ShotXLChunk>), typeof(StructEntry<ShotX4Chunk>), typeof(StructEntry<ShotX5Chunk>),
             typeof(StructEntry<ShotX6Chunk>), typeof(StructEntry<ShotX7Chunk>), typeof(StructEntry<ShotX8Chunk>)};
         public static int[] structSizes = { 0x350, 0x18C, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -149,7 +152,7 @@ namespace MarvelData
                     // data is added/read from file here and put on table entry
                     current.originalPointer = reader.ReadUInt32();
 
-                    AELogger.Log("add current: " + current.index.ToString("X") + "h at " 
+                    AELogger.Log("add current: " + current.index.ToString("X") + "h at "
                     + current.originalPointer.ToString("X") + "h with name " + current.name);
                     realCount++;
                     tablefile.table.Add(current);
@@ -350,7 +353,7 @@ namespace MarvelData
                     //}
 
                     // count size of file before body
-                    int preBodyFileSize = tablefile.header.Length + tablefile.headerB.Length + tablefile.shotNameBytes.Length + tablefile.headerC.Length ;
+                    int preBodyFileSize = tablefile.header.Length + tablefile.headerB.Length + tablefile.shotNameBytes.Length + tablefile.headerC.Length;
                     TableEntry current = (TableEntry)Activator.CreateInstance(entryType);
                     byte[] readBodyBytes = new byte[1];
                     while (i >= 100 && i < 267) // 0x64
@@ -427,7 +430,7 @@ namespace MarvelData
                     // count size of file before body2
                     int postBodyFileSize = preBodyFileSize + tablefile.table[0].size + tablefile.shotName2Bytes.Length;
                     int remainingBodySize = (int)(length - postBodyFileSize);
-                    int entryCount = (BitConverter.ToInt32(tablefile.headerB, 4) -  768) / 96 ;
+                    int entryCount = (BitConverter.ToInt32(tablefile.headerB, 4) - 768) / 96;
                     // simplifies the process in the future. remove when this is a multistruct
                     int S = 0;
                     if (entryCount == 0) { S = 10; }
@@ -487,9 +490,17 @@ namespace MarvelData
                 return tablefile;
             }
         }
+        // .CPI (profile) files have no pointer table. Layout is:
+        //   0x00  "CPI\0"
+        //   0x04  unknown, left alone on save
+        //   0x08  intro entry count
+        //   0x0C  victory entry count
+        //   0x10  self chunk, 8 bytes (own character id + identity flags)
+        //   0x18  intro entries, then victory entries, 8 bytes each
+        // table[0] is the self chunk, table[1..] are the intro block followed by the victory block.
         private static TableFile ReadProfile(string filename, out Type entryType, ref int structsize, TableFile tablefile)
         {
-            entryType = structTypes[11];
+            entryType = structTypes[11]; // StructEntry<ProfileSelfChunk>
             structsize = CPIEntrySize;
             tablefile.fileType = entryType;
             tablefile.defaultChunkSize = CPIEntrySize;
@@ -564,15 +575,27 @@ namespace MarvelData
             }
             return tablefile;
         }
+
+        // Appends a blank intro or victory entry. Intros go on the end of the intro block,
+        // victories on the end of the file.
         public void AddProfileEntry(bool bIntro)
         {
             if (fileExtension != "CPI" || table.Count < 1)
             {
                 return;
             }
+            // introID is the line index into the character's recorded voice lines and every stock
+            // file runs 0..n-1 with no gaps, so hand out the next free one instead of leaving a
+            // zero that collides with an existing entry. soundID follows the vanilla layout.
+            int nextID = bIntro ? cpiIntroCount : (table.Count - 1 - cpiIntroCount);
+            byte[] blank = new byte[CPIEntrySize];
+            blank[0] = (byte)nextID;                            // introID
+            blank[1] = 100;                                     // probability
+            blank[2] = (byte)(bIntro ? nextID : nextID + 10);   // soundID
+
             TableEntry entry = (TableEntry)Activator.CreateInstance(typeof(StructEntry<ProfileChunk>));
             entry.size = CPIEntrySize;
-            entry.SetData(new byte[CPIEntrySize]);
+            entry.SetData(blank);
             entry.bHasData = true;
             entry.name = "***NEW ENTRY***";
 
@@ -599,6 +622,9 @@ namespace MarvelData
             table.RemoveAt(index);
             RenumberProfile();
         }
+
+        // Swaps an entry with its neighbour. Won't move an entry across the intro/victory line,
+        // since that would silently change what the entry means.
         public bool MoveProfileEntry(int index, int offset)
         {
             if (fileExtension != "CPI" || offset == 0)
@@ -658,6 +684,8 @@ namespace MarvelData
             }
             TotalEntries = (uint)table.Count;
         }
+
+        // Header counts get rebuilt from the table, so adding and removing entries stays consistent.
         private void WriteProfile(BinaryWriter b)
         {
             if (header == null || header.Length != 8)
@@ -699,6 +727,8 @@ namespace MarvelData
             headerC = BitConverter.GetBytes(victoryCount);
             AELogger.Log("CPI written with " + cpiIntroCount + " intros and " + victoryCount + " victories");
         }
+
+        // Every CPI chunk is exactly 8 bytes. Pad or trim anything that isn't.
         private static byte[] GetProfileChunkBytes(TableEntry entry)
         {
             byte[] chunk = new byte[CPIEntrySize];
@@ -712,7 +742,7 @@ namespace MarvelData
         }
 
 
-                // sets entry type and structure size of tableFile
+        // sets entry type and structure size of tableFile
         private static void AutoIdentifyFileType(ref Type entryType, ref int structsize, TableFile tablefile)
         {
             string typeString = ASCIIEncoding.Default.GetString(tablefile.header, 0, 3);
@@ -750,6 +780,7 @@ namespace MarvelData
             TableEntry entry = null;
             if (fileExtension.ToString() == "CPI")
             {
+                // CPI needs the header counts kept in sync, so it goes through its own path
                 AddProfileEntry(false);
                 return;
             }
@@ -764,7 +795,8 @@ namespace MarvelData
                 entry.bHasData = false;
 
             }
-            else {
+            else
+            {
                 entry.bHasData = true;
             }
 
@@ -795,16 +827,16 @@ namespace MarvelData
             //int total = table[index].subEntries.Count();
             while (i <= 0)
             {
-            //first.subEntries = table[index].subEntries;
-            //second.subEntries = table[newindex].subEntries;
-            i++;
+                //first.subEntries = table[index].subEntries;
+                //second.subEntries = table[newindex].subEntries;
+                i++;
             }
             //(table[index], table[newindex]) = (table[newindex], table[index]);
             //            table[index] = second;
             //            table[newindex] = first;
             first.index = (uint)index;
             second.index = (uint)newindex;
-        
+
 
 
             return newindex;
@@ -848,6 +880,7 @@ namespace MarvelData
             Stream t = new FileStream(filename + ".temp", FileMode.Create);
             BinaryWriter b = new BinaryWriter(t);
 
+            // CPI has its own layout, nothing below applies to it
             if (fileExtension == "CPI")
             {
                 WriteProfile(b);
@@ -1258,7 +1291,7 @@ namespace MarvelData
                                 string ati = dataString.Substring(dataString.Count() - 16, 2);
                                 string cli = dataString.Substring(dataString.Count() - 8, 2);
 
-                                table[infoRef].name += ", ATI=>" + ati + " CLI=>" + cli ;
+                                table[infoRef].name += ", ATI=>" + ati + " CLI=>" + cli;
                             }
                             if (subEntries[l].GetCommandList().ToArray()[m].Contains("0_0C")
                                 && subEntries[l].localindex <= ((AnmChrEntry)table[i]).animTime
@@ -1266,7 +1299,7 @@ namespace MarvelData
                             {
                                 table[infoRef].name = "Charge " + table[infoRef].name;
                             }
-                            if (subEntries[l].GetCommandList().ToArray()[m].Contains("3_30")|| subEntries[l].GetCommandList().ToArray()[m].Contains("3_31")
+                            if (subEntries[l].GetCommandList().ToArray()[m].Contains("3_30") || subEntries[l].GetCommandList().ToArray()[m].Contains("3_31")
                                 && subEntries[l].localindex <= ((AnmChrEntry)table[i]).animTime
                                 )
                             {
@@ -1328,17 +1361,18 @@ namespace MarvelData
                     int hexIndex = Convert.ToInt32(originalName.Substring(originalName.IndexOf(referenceType) + referenceType.Length + 2, 2), 16);
                     int hexLastIndex = Convert.ToInt32(originalName.Substring(originalName.LastIndexOf(referenceType) + referenceType.Length + 2, 2), 16);
                     //int hexLastIndex = hexIndex - 1;
-                   if (hexIndex <= atiFile.table.Count && hexIndex >= 0)
-                   {
+                    if (hexIndex <= atiFile.table.Count && hexIndex >= 0)
+                    {
                         if (hexIndex != hexLastIndex &&
                         (atiFile.table[hexIndex].name == "unknown" || atiFile.table[hexLastIndex].name == "unknown"))
                         {
-                        table[i].name = table[i].name.Replace("unknown", atiFile.table[hexIndex].name + " " + atiFile.table[hexLastIndex].name);
+                            table[i].name = table[i].name.Replace("unknown", atiFile.table[hexIndex].name + " " + atiFile.table[hexLastIndex].name);
                         }
-                        else{
-                        table[i].name = table[i].name.Replace("unknown", atiFile.table[hexIndex].name);
+                        else
+                        {
+                            table[i].name = table[i].name.Replace("unknown", atiFile.table[hexIndex].name);
                         }
-                   }
+                    }
                     else
                     {
                         table[i].name = table[i].name.Replace("unknown", "unknown - atkinfo doesn't exist?");
