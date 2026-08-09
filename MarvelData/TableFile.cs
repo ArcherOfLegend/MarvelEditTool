@@ -34,8 +34,6 @@ namespace MarvelData
         private String shotName2String;
         private byte[] headerC;
         private byte[] headerD;
-        // for .CPI only. the file has no pointer table, just two counts in the header,
-        // so we need to remember where the intro block stops and the victory block starts.
         public int cpiIntroCount;
         public const int CPIHeaderSize = 0x18; // magic + unk04 + intro count + victory count + self chunk
         public const int CPIEntrySize = 8;
@@ -490,14 +488,6 @@ namespace MarvelData
                 return tablefile;
             }
         }
-        // .CPI (profile) files have no pointer table. Layout is:
-        //   0x00  "CPI\0"
-        //   0x04  unknown, left alone on save
-        //   0x08  intro entry count
-        //   0x0C  victory entry count
-        //   0x10  self chunk, 8 bytes (own character id + identity flags)
-        //   0x18  intro entries, then victory entries, 8 bytes each
-        // table[0] is the self chunk, table[1..] are the intro block followed by the victory block.
         private static TableFile ReadProfile(string filename, out Type entryType, ref int structsize, TableFile tablefile)
         {
             entryType = structTypes[11]; // StructEntry<ProfileSelfChunk>
@@ -575,18 +565,12 @@ namespace MarvelData
             }
             return tablefile;
         }
-
-        // Appends a blank intro or victory entry. Intros go on the end of the intro block,
-        // victories on the end of the file.
         public void AddProfileEntry(bool bIntro)
         {
             if (fileExtension != "CPI" || table.Count < 1)
             {
                 return;
             }
-            // introID is the line index into the character's recorded voice lines and every stock
-            // file runs 0..n-1 with no gaps, so hand out the next free one instead of leaving a
-            // zero that collides with an existing entry. soundID follows the vanilla layout.
             int nextID = bIntro ? cpiIntroCount : (table.Count - 1 - cpiIntroCount);
             byte[] blank = new byte[CPIEntrySize];
             blank[0] = (byte)nextID;                            // introID
@@ -607,8 +591,6 @@ namespace MarvelData
             }
             RenumberProfile();
         }
-
-        // Index 0 is the self chunk and can't go anywhere.
         public void DeleteProfileEntry(int index)
         {
             if (fileExtension != "CPI" || index < 1 || index >= table.Count)
@@ -622,9 +604,6 @@ namespace MarvelData
             table.RemoveAt(index);
             RenumberProfile();
         }
-
-        // Swaps an entry with its neighbour. Won't move an entry across the intro/victory line,
-        // since that would silently change what the entry means.
         public bool MoveProfileEntry(int index, int offset)
         {
             if (fileExtension != "CPI" || offset == 0)
@@ -685,7 +664,7 @@ namespace MarvelData
             TotalEntries = (uint)table.Count;
         }
 
-        // Header counts get rebuilt from the table, so adding and removing entries stays consistent.
+        // Header counts get rebuilt from the table
         private void WriteProfile(BinaryWriter b)
         {
             if (header == null || header.Length != 8)
@@ -728,7 +707,7 @@ namespace MarvelData
             AELogger.Log("CPI written with " + cpiIntroCount + " intros and " + victoryCount + " victories");
         }
 
-        // Every CPI chunk is exactly 8 bytes. Pad or trim anything that isn't.
+        // Every CPI chunk is exactly 8 bytes.
         private static byte[] GetProfileChunkBytes(TableEntry entry)
         {
             byte[] chunk = new byte[CPIEntrySize];
@@ -780,7 +759,6 @@ namespace MarvelData
             TableEntry entry = null;
             if (fileExtension.ToString() == "CPI")
             {
-                // CPI needs the header counts kept in sync, so it goes through its own path
                 AddProfileEntry(false);
                 return;
             }
@@ -879,8 +857,6 @@ namespace MarvelData
             }
             Stream t = new FileStream(filename + ".temp", FileMode.Create);
             BinaryWriter b = new BinaryWriter(t);
-
-            // CPI has its own layout, nothing below applies to it
             if (fileExtension == "CPI")
             {
                 WriteProfile(b);
